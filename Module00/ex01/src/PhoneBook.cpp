@@ -1,16 +1,18 @@
 #include <iostream>
-#include <string>
+#include "../includes/Contact.class.hpp"
+#include "../includes/PhoneBook.class.hpp"
 
-int main(int argc, char **argv) {
-	std::string message;
-	if (argc == 1)
-		message = "* LOUD AND UNBEARABLE FEEDBACK NOISE *\n";
-	if (argc > 1) {
-		for (int i = 1; i < argc; ++i)
-			message += (std::string)argv[i];
-		message += "\n";
-		for (std::size_t i = 0; i < message.size(); ++i)
-		message[i] = std::toupper(message[i]);	
+class Phonebook {
+private:
+    Contact Contacts[8];  // Array to store 8 contacts
+    int contact_count;    // Keep track of how many contacts are stored
+
+public:
+    Phonebook();
+    ~Phonebook();
+
+    void AddContact(const Contact& contact){
+    Contacts[contact_count % 8] = contact;
+    contact_count++;		
 	}
-	std::cout << message;
-}
+};
