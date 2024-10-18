@@ -24,6 +24,8 @@ public:
     void setPhoneNumber(const std::string& number);
     void setDarkestSecret(const std::string& secret);
 
+    void setField(const std::string& field);
+
     // Getters
     std::string getFirstName() const;
     std::string getLastName() const;

@@ -15,32 +15,29 @@ void set_field(std::string &entry, const std::string &field) {
     }
 }
 
+
 int main() {
-  	Phonebook phonebook;  // Create a PhoneBook instance
-	Contact new_contact;
-	std::string command;
+    Phonebook phonebook;  // Create a PhoneBook instance
+    Contact new_contact;
+    std::string command;
 
-std::cout << "Welcome to PhoneBook" << std::endl;
+    std::cout << "Welcome to PhoneBook" << std::endl;
 
-while(1) {
-    std::cout << "Enter command: ";
-    std::cin >> command;
-/*◦ If the user enters this command, they are prompted to input the information
-of the new contact one field at a time. Once all the fields have been completed,
-add the contact to the phonebook.
-◦ The contact fields are: first name, last name, nickname, phone number, and
-darkest secret. A saved contact can’t have empty fields.*/
-if (command.compare("ADD") == 0) {
-	//TODO:get contact id available
+    while(1) {
+        std::cout << "Enter command: ";
+        std::cin >> command;
 
-	set_field(command, "First Name");
-	set_field(command, "Last Name");
-	set_field(command, "Nickname");
-	set_field(command, "Phone Number");
-	set_field(command, "Darkest Secret");
+        if (command.compare("ADD") == 0) {
+            // Get the contact details by prompting the user
+            new_contact.setField("First Name");
+            new_contact.setField("Last Name");
+            new_contact.setField("Nickname");
+            new_contact.setField("Phone Number");
+            new_contact.setField("Darkest Secret");
 
+            // Now that new_contact is filled, add it to the phonebook
+            phonebook.AddContact(new_contact);
 
-}
 /*• SEARCH: display a specific contact
 ◦ Display the saved contacts as a list of 4 columns: index, first name, last
 name and nickname.
@@ -51,15 +48,13 @@ dot (’.’).
 ◦ Then, prompt the user again for the index of the entry to display. If the index
 is out of range or wrong, define a relevant behavior. Otherwise, display the
 contact information, one field per line.*/
-else if (command.compare("SEARCH") == 0) {
-	//TODO
-}
-else if (command.compare("EXIT") == 0) {
-	std::cout << "exiting PhoneBook..." << std::endl;
-	return 0;
-}
-else
-	std::cout << "Invalid command. Try a valid one: ADD, SEARCH or EXIT" << std::endl;
-
-}
+        } else if (command.compare("SEARCH") == 0) {
+            // TODO: Implement search functionality
+        } else if (command.compare("EXIT") == 0) {
+            std::cout << "Exiting PhoneBook..." << std::endl;
+            return 0;
+        } else {
+            std::cout << "Invalid command. Try a valid one: ADD, SEARCH or EXIT" << std::endl;
+        }
+    }
 }
