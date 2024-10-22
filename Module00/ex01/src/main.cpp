@@ -1,55 +1,37 @@
 #include <iostream>
-#include "../includes/Contact.class.hpp"
-#include "../includes/PhoneBook.class.hpp"
-
-void set_field(std::string &entry, const std::string &field) {
-    while (1) {
-        std::cout << "Please enter " << field << ":" << std::endl;
-        std::cin >> entry;		
-        if (!entry.empty()) {
-            // set the value in the correct field
-            break;
-        } else {
-            std::cout << "Error: empty entry" << std::endl;
-        }
-    }
-}
-
+#include "../includes/Contact.hpp"
+#include "../includes/PhoneBook.hpp"
 
 int main() {
-    Phonebook phonebook;  // Create a PhoneBook instance
+    Phonebook phonebook;
     Contact new_contact;
     std::string command;
 
     std::cout << "Welcome to PhoneBook" << std::endl;
 
-    while(1) {
+    while (1) {
         std::cout << "Enter command: ";
-        std::cin >> command;
+        std::getline(std::cin, command); // Change to getline to capture entire line
+
+        if (command.empty()) { // Check if the command is empty
+            std::cout << "Error: No command entered. Please try again." << std::endl;
+            continue; // Skip the rest of the loop and prompt again
+        }
 
         if (command.compare("ADD") == 0) {
-            // Get the contact details by prompting the user
             new_contact.setField("First Name");
             new_contact.setField("Last Name");
             new_contact.setField("Nickname");
             new_contact.setField("Phone Number");
             new_contact.setField("Darkest Secret");
-
-            // Now that new_contact is filled, add it to the phonebook
             phonebook.AddContact(new_contact);
-
-/*• SEARCH: display a specific contact
-◦ Display the saved contacts as a list of 4 columns: index, first name, last
-name and nickname.
-◦ Each column must be 10 characters wide. A pipe character (’|’) separates
-them. The text must be right-aligned. If the text is longer than the column,
-it must be truncated and the last displayable character must be replaced by a
-dot (’.’).
-◦ Then, prompt the user again for the index of the entry to display. If the index
-is out of range or wrong, define a relevant behavior. Otherwise, display the
-contact information, one field per line.*/
         } else if (command.compare("SEARCH") == 0) {
-            // TODO: Implement search functionality
+            if (phonebook.getContactCount() == 0) {
+                std::cout << "No contacts added. ADD a contact first." << std::endl;
+            } else {
+                phonebook.DisplaySearchContacts();
+                phonebook.Search();
+            }
         } else if (command.compare("EXIT") == 0) {
             std::cout << "Exiting PhoneBook..." << std::endl;
             return 0;

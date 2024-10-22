@@ -6,7 +6,6 @@
 class Contact {
 
 private:
-    int ContactIndex;
     std::string first_name;
     std::string last_name;
     std::string nickname;
@@ -17,7 +16,6 @@ public:
     Contact();
     ~Contact();
 
-    // Setters
     void setFirstName(const std::string& name);
     void setLastName(const std::string& name);
     void setNickname(const std::string& name);
@@ -26,7 +24,6 @@ public:
 
     void setField(const std::string& field);
 
-    // Getters
     std::string getFirstName() const;
     std::string getLastName() const;
     std::string getNickname() const;

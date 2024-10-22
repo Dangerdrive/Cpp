@@ -1,5 +1,8 @@
 #include <iostream>
-#include "../includes/Contact.class.hpp"
+#include "../includes/Contact.hpp"
+
+Contact::Contact() {}
+Contact::~Contact() {}
 
 void Contact::setFirstName(const std::string& entry) { this->first_name = entry; }
 void Contact::setLastName(const std::string& entry) { this->last_name = entry; }
@@ -12,9 +15,12 @@ void Contact::setField(const std::string& field) {
 
     while (1) {
         std::cout << "Please enter " << field << ":" << std::endl;
-        std::cin >> entry;
+        std::getline(std::cin, entry); // Use getline to read the entire line
 
-        if (!entry.empty()) {
+        if (entry.empty()) {
+            std::cout << "Error: empty entry" << std::endl; // Error for empty input
+            std::cout << "Please enter " << field << ":" << std::endl;
+        } else {
             if (field == "First Name") {
                 setFirstName(entry);
             } else if (field == "Last Name") {
@@ -26,9 +32,7 @@ void Contact::setField(const std::string& field) {
             } else if (field == "Darkest Secret") {
                 setDarkestSecret(entry);
             }
-            break;
-        } else {
-            std::cout << "Error: empty entry" << std::endl;
+            break; // Exit the loop if valid input is provided
         }
     }
 }
