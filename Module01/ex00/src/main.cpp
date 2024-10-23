@@ -1,6 +1,5 @@
 #include <iostream>
-#include "../includes/Contact.hpp"
-#include "../includes/PhoneBook.hpp"
+#include "../includes/Zombie.hpp"
 
 int main() {
     Zombie phonebook;

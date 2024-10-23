@@ -2,28 +2,28 @@
 #include "../includes/PhoneBook.hpp"
 #include <iostream>
 
-Phonebook::Phonebook() : contact_count(0) {}
-Phonebook::~Phonebook() {}
+Zombie::Zombie() : contact_count(0) {}
+Zombie::~Zombie() {}
 
-void Phonebook::AddContact(const Contact& contact) {
+void Zombie::AddContact(const Zombie& contact) {
     Contacts[contact_count % 8] = contact;
     contact_count++;
-    std::cout << "Contact added to index [" << (contact_count % 8 - 1) << "]" << std::endl;
+    std::cout << "Zombie added to index [" << (contact_count % 8 - 1) << "]" << std::endl;
 }
 
-int Phonebook::getContactCount() const {
+int Zombie::getContactCount() const {
     return contact_count;
 }
 
-void Phonebook::PrintFullContact(const Contact& contact) const {
-    std::cout << "First Name:\t" << contact.getFirstName() << std::endl;
+void Zombie::PrintFullContact(const Zombie& contact) const {
+    std::cout << "First Name:\t" << contact.getName() << std::endl;
     std::cout << "Last Name:\t" << contact.getLastName() << std::endl;
     std::cout << "Nickname:\t" << contact.getNickname() << std::endl;
     std::cout << "Phone Number:\t" << contact.getPhoneNumber() << std::endl;
     std::cout << "Darkest Secret:\t" << contact.getDarkestSecret() << std::endl;
 }
 
-void Phonebook::PrintColumn(std::string text) const {
+void Zombie::PrintColumn(std::string text) const {
     std::size_t text_size = text.size();
     if (text_size > 10) {
         std::cout << text.substr(0, 9)  << ".";
@@ -35,27 +35,27 @@ void Phonebook::PrintColumn(std::string text) const {
     std::cout << '|';
 }
 
-void Phonebook::PrintContactForSearch(Contact contact, std::string index) const {
+void Zombie::PrintContactForSearch(Zombie contact, std::string index) const {
     PrintColumn(index);
-    PrintColumn(contact.getFirstName());
+    PrintColumn(contact.getName());
     PrintColumn(contact.getLastName());
     PrintColumn(contact.getNickname());
     std::cout << std::endl;
 }
 
-void Phonebook::DisplaySearchContacts() const {
+void Zombie::DisplaySearchContacts() const {
     PrintColumn("INDEX");
     PrintColumn("FIRST NAME");
     PrintColumn("LAST NAME");
     PrintColumn("NICKNAME");
     std::cout << std::endl;    
     
-    for (int i = 0; i < 8 && !Contacts[i].getFirstName().empty(); i++) {
+    for (int i = 0; i < 8 && !Contacts[i].getName().empty(); i++) {
         PrintContactForSearch(Contacts[i], std::string(1, (char)(i + '0')));
     }
 }
 
-void Phonebook::Search() const {
+void Zombie::Search() const {
     std::string entry;
     int index;
 
@@ -72,7 +72,7 @@ void Phonebook::Search() const {
 
             if (index >= contact_count) {
                 std::cout << "Error: No record at index " << index << std::endl;
-            } else if (Contacts[index].getFirstName().empty()) {
+            } else if (Contacts[index].getName().empty()) {
                 std::cout << "Error: No contact at index " << index << std::endl;
             } else {
                 std::cout << "Displaying contact details for index " << index << std::endl;

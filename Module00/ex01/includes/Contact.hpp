@@ -3,18 +3,18 @@
 
 #include <string>
 
-class Contact {
+class Zombie {
 
 private:
-    std::string first_name;
+    std::string name;
     std::string last_name;
     std::string nickname;
     std::string phonenumber;
     std::string darkest_secret;
 
 public:
-    Contact();
-    ~Contact();
+    Zombie();
+    ~Zombie();
 
     void setFirstName(const std::string& name);
     void setLastName(const std::string& name);
@@ -24,7 +24,7 @@ public:
 
     void setField(const std::string& field);
 
-    std::string getFirstName() const;
+    std::string getName() const;
     std::string getLastName() const;
     std::string getNickname() const;
     std::string getPhoneNumber() const;

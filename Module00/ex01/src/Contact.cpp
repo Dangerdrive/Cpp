@@ -1,16 +1,16 @@
 #include <iostream>
 #include "../includes/Contact.hpp"
 
-Contact::Contact() {}
-Contact::~Contact() {}
+Zombie::Zombie() {}
+Zombie::~Zombie() {}
 
-void Contact::setFirstName(const std::string& entry) { this->first_name = entry; }
-void Contact::setLastName(const std::string& entry) { this->last_name = entry; }
-void Contact::setNickname(const std::string& entry) { this->nickname = entry; }
-void Contact::setPhoneNumber(const std::string& entry) { this->phonenumber = entry; }
-void Contact::setDarkestSecret(const std::string& entry) { this->darkest_secret = entry; }
+void Zombie::setFirstName(const std::string& entry) { this->name = entry; }
+void Zombie::setLastName(const std::string& entry) { this->last_name = entry; }
+void Zombie::setNickname(const std::string& entry) { this->nickname = entry; }
+void Zombie::setPhoneNumber(const std::string& entry) { this->phonenumber = entry; }
+void Zombie::setDarkestSecret(const std::string& entry) { this->darkest_secret = entry; }
 
-void Contact::setField(const std::string& field) {
+void Zombie::setField(const std::string& field) {
     std::string entry;
 
     while (1) {
@@ -37,8 +37,8 @@ void Contact::setField(const std::string& field) {
     }
 }
 
-std::string Contact::getFirstName() const { return this->first_name; }
-std::string Contact::getLastName() const { return this->last_name; }
-std::string Contact::getNickname() const { return this->nickname; }
-std::string Contact::getPhoneNumber() const { return this->phonenumber; }
-std::string Contact::getDarkestSecret() const { return this->darkest_secret; }
+std::string Zombie::getName() const { return this->name; }
+std::string Zombie::getLastName() const { return this->last_name; }
+std::string Zombie::getNickname() const { return this->nickname; }
+std::string Zombie::getPhoneNumber() const { return this->phonenumber; }
+std::string Zombie::getDarkestSecret() const { return this->darkest_secret; }
