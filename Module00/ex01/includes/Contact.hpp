@@ -3,7 +3,7 @@
 
 #include <string>
 
-class Zombie {
+class Contact {
 
 private:
     std::string name;
@@ -13,8 +13,8 @@ private:
     std::string darkest_secret;
 
 public:
-    Zombie();
-    ~Zombie();
+    Contact();
+    ~Contact();
 
     void setFirstName(const std::string& name);
     void setLastName(const std::string& name);

@@ -1,14 +1,14 @@
 #include <iostream>
 #include "../includes/Zombie.hpp"
 
-Zombie::Zombie() {}
-Zombie::Zombie(std::string name) : name(name) {}
-Zombie::~Zombie() {
+Contact::Contact() {}
+Contact::Contact(std::string name) : name(name) {}
+Contact::~Contact() {
     std::cout << name << std::endl
 }
 
-void Zombie::announce() {
+void Contact::announce() {
     std::cout << name << ": BraiiiiiiinnnzzzZ..." << std::endl
 }
 
-std::string Zombie::getName() const { return this->name; }
+std::string Contact::getName() const { return this->name; }
