@@ -63,7 +63,3 @@ fclean: clean
 # Removes objects and executables and remakes
 re: fclean all
 
-test: $(NAME)
-	./megaphone Damnit " ! " "Sorry students, I thought this thing was off."
-	./megaphone
-	./megaphone "shhhhh... I think the students are asleep..."

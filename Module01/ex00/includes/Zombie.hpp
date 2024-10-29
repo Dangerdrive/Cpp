@@ -3,17 +3,17 @@
 
 #include <string>
 
-class Zombie {
+class Phonebook {
 private:
     std::string name;
 
 public:
-    Zombie();
-    Zombie(std::string name);
-    ~Zombie();
+    Phonebook();
+    Phonebook(std::string name);
+    ~Phonebook();
 
     void        announce();
-    std::string getName() const;    
+    std::string getName() const;
 };
 
 

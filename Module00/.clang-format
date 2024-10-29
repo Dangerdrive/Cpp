@@ -1,0 +1,9 @@
+# .clang-format
+BasedOnStyle: Google
+IndentWidth: 2           # Google style uses a 2-space indent
+ColumnLimit: 80          # Wrap lines at 80 characters
+AllowShortFunctionsOnASingleLine: Empty  # Consistent with Google style
+DerivePointerAlignment: false
+PointerAlignment: Left
+UseTab: Never            # Use spaces instead of tabs
+BreakBeforeBraces: Allman # Braces on new lines for functions, classes, etc.

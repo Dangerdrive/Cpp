@@ -3,21 +3,21 @@
 
 #include "Contact.hpp"
 
-class Zombie {
+class Phonebook {
 private:
-    Zombie Contacts[8];
+    Contact Contacts[8];
     int contact_count;
 
 public:
-    Zombie();
-    ~Zombie();
+    Phonebook();
+    ~Phonebook();
 
     int getContactCount() const;
-    void AddContact(const Zombie& contact);
+    void AddContact(const Contact& contact);
     void PrintColumn(std::string text) const;
-    void PrintContactForSearch(Zombie contact, std::string index) const;
+    void PrintContactForSearch(Contact contact, std::string index) const;
     void DisplaySearchContacts() const;
-    void PrintFullContact(const Zombie& contact) const;
+    void PrintFullContact(const Contact& contact) const;
     void Search() const;
 };
 

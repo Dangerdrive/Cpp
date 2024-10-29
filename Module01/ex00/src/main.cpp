@@ -2,8 +2,8 @@
 #include "../includes/Zombie.hpp"
 
 int main() {
-    Zombie phonebook;
-    Zombie new_contact;
+    Phonebook phonebook;
+    Phonebook new_contact;
     std::string command;
 
     std::cout << "Welcome to PhoneBook" << std::endl;
