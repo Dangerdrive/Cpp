@@ -17,8 +17,8 @@ CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	megaphonebook
-SRCS	=	./src/main.cpp ./src/Contact.cpp ./src/PhoneBook.cpp
+NAME	=	BraiiiiiiinnnzzzZ
+SRCS	=	./src/main.cpp ./src/Zombie.cpp ./src/newZombie.cpp ./src/randomChump.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)

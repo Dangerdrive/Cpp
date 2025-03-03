@@ -29,6 +29,7 @@ CYAN	=	"\033[36;1;3m"
 WHITE_U	=	"\033[37;1;4m"
 LIMITER =	"\033[0m"
 
+
 #------------------------------------------------------------------------------#
 #                                 TARGETS                                      #
 #------------------------------------------------------------------------------#
@@ -38,10 +39,11 @@ all: $(BIN_DIR) $(NAME)
 # Generates output file
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	@echo "\r$(GREEN)[$(NAME) compiled successfully!]$(LIMITER)      "  # Success message here
 
 # Compiles sources into objects
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
-	@echo $(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)
+	@printf "\r$(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)      "
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Create bin directory
@@ -62,4 +64,51 @@ fclean: clean
 
 # Removes objects and executables and remakes
 re: fclean all
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #------------------------------------------------------------------------------#
+# #                                 TARGETS                                      #
+# #------------------------------------------------------------------------------#
+
+# all: $(BIN_DIR) $(NAME)
+
+# # Generates output file
+# $(NAME): $(OBJS)
+# 	@$(CC) $(CFLAGS) $(OBJS) -o $@
+
+# # Compiles sources into objects
+# $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
+# 	@echo $(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)
+# 	@$(CC) $(CFLAGS) -c $< -o $@
+
+# # Create bin directory
+# $(BIN_DIR):
+# 	@echo $(GREEN)[Creating $(BIN_DIR)]$(LIMITER)
+# 	@mkdir -p $@
+
+# # Removes objects
+# clean:
+# 	@echo $(GREEN)[Cleaning objects]$(LIMITER)
+# 	@$(RM) $(OBJS)
+
+# # Removes objects and executables
+# fclean: clean
+# 	@echo $(GREEN)[Cleaning $(NAME)]$(LIMITER)
+# 	@$(RM) $(NAME)
+# 	@$(RM) $(BIN_DIR)
+
+# # Removes objects and executables and remakes
+# re: fclean all
 
