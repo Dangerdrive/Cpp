@@ -3,12 +3,10 @@
 
 int main() {
 
-    int numberOfZombies = 10;
+Zombie* zombieCat = newZombie("Oli Zombie");
+zombieCat->announce();
 
-    Zombie.zombieHorde(numberOfZombies, "Oli Zombie" );
-    for (int i = 0; i < numberOfZombies; i++) {
-        horde[i] = Zombie(name);
-    }
+randomChump("Gin Zombie");
 
 delete zombieCat;
 }

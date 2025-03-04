@@ -3,10 +3,13 @@
 
 int main() {
 
-Zombie* zombieCat = newZombie("Oli Zombie");
-zombieCat->announce();
+    int numberOfZombies = 10;
 
-randomChump("Gin Zombie");
+    Zombie* horde = zombieHorde(numberOfZombies, "Oli Zombie");
 
-delete zombieCat;
+    for (int i = 0; i < numberOfZombies; i++) {
+        horde[i].announce();
+    }
+
+delete[] horde;
 }

@@ -118,3 +118,12 @@ Template Instantiation:
 Templates are not actual code until they are instantiated with a specific type.
 
 The compiler needs to see the full definition of the template (not just a declaration) to generate the code for the specific type.
+
+
+
+References
+References are safer and easier to use than pointers because they cannot be null and cannot be reassigned to refer to a different variable.
+
+A reference is an alias for a variable and shares its memory address.
+
+They are often used in function parameters to avoid copying large objects.

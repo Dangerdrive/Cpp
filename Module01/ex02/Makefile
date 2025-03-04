@@ -13,12 +13,12 @@ DEFAULT_GOAL: all
 
 # Compiler and flags
 CC		=	c++
-CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
+CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	braiiiiiiinnnzzzZ
-SRCS	=	./src/main.cpp ./src/Zombie.cpp ./src/newZombie.cpp ./src/randomChump.cpp
+NAME	=	hi
+SRCS	=	./src/main.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)
@@ -62,3 +62,4 @@ fclean: clean
 
 # Removes objects and executables and remakes
 re: fclean all
+
