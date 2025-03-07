@@ -21,9 +21,9 @@
 [19920104_091532] index:3;p_amount:432;deposit:2;amount:434;nb_deposits:1
 [19920104_091532] index:4;p_amount:1234;deposit:87;amount:1321;nb_deposits:1
 [19920104_091532] index:5;p_amount:0;deposit:23;amount:23;nb_deposits:1
-[19920104_091532] index:6;p_amount:754;deposit:9;amount:763;nb_deposits:1
-[19920104_091532] index:7;p_amount:16576;deposit:20;amount:16596;nb_deposits:1
-[19920104_091532] accounts:8;total:21524;deposits:8;withdrawals:0
+[19920104_091532] index:6;p_amount:754;deposit:9;amount:763;nb_depo;nb_deposits:1
+[19920104_091532] accounts:8;total:21524;deposits:8;withdrawals:sits:1
+[19920104_091532] index:7;p_amount:16576;deposit:20;amount:165960
 [19920104_091532] index:0;amount:47;deposits:1;withdrawals:0
 [19920104_091532] index:1;amount:819;deposits:1;withdrawals:0
 [19920104_091532] index:2;amount:1521;deposits:1;withdrawals:0
