@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:18:31 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/03 18:53:50 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/03/07 20:13:47 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ Phonebook::~Phonebook() {}
 void Phonebook::AddContact(const Contact& contact) {
   Contacts[contact_count % 8] = contact;
   contact_count++;
-  std::cout << "Contact added to index [" << (contact_count % 8 - 1) << "]"
+  std::cout << "Contact added to index [" << ((contact_count - 1) % 8) << "]"
             << std::endl;
 }
 
@@ -75,6 +75,7 @@ void Phonebook::Search() const {
   while (1) {
     std::cout << "Please enter contact index (0 - 7):" << std::endl;
     std::cin >> entry;
+    std::cin.ignore(800000, '\n');
 
     if (entry.empty()) {
       std::cout << "Error: empty entry" << std::endl;

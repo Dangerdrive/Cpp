@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:18:21 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/03 18:53:39 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/03/07 16:48:51 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ void Contact::setField(const std::string& field) {
 
   while (1) {
     std::cout << "Please enter " << field << ":" << std::endl;
-    std::getline(std::cin, entry);  // Use getline to read the entire line
+    std::getline(std::cin, entry);
 
     if (entry.empty()) {
-      std::cout << "Error: empty entry" << std::endl;  // Error for empty input
+      std::cout << "Error: empty entry" << std::endl;
       std::cout << "Please enter " << field << ":" << std::endl;
     } else {
       if (field == "First Name") {
@@ -49,7 +49,7 @@ void Contact::setField(const std::string& field) {
       } else if (field == "Darkest Secret") {
         setDarkestSecret(entry);
       }
-      break;  // Exit the loop if valid input is provided
+      break;
     }
   }
 }

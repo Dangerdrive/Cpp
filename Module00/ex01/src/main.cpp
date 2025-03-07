@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 21:18:11 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/03 18:53:44 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/03/07 20:14:37 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,10 @@ int main() {
     std::cout << "Enter command: ";
     std::getline(std::cin,
                  command);
-
     if (command.empty()) {
-      std::cout << "Error: No command entered. Please try again." << std::endl;
-      continue;
+    std::cout << "Error: No command entered. Please try again." << std::endl;
+    continue;
     }
-
     if (command.compare("ADD") == 0) {
       new_contact.setField("First Name");
       new_contact.setField("Last Name");
@@ -46,12 +44,13 @@ int main() {
         phonebook.DisplaySearchContacts();
         phonebook.Search();
       }
+      continue;
     } else if (command.compare("EXIT") == 0) {
       std::cout << "Exiting PhoneBook..." << std::endl;
       return 0;
-    } else {
-      std::cout << "Invalid command. Try a valid one: ADD, SEARCH or EXIT"
+      
+    } else 
+                std::cout << "Invalid command. Try a valid one: ADD, SEARCH or EXIT"
                 << std::endl;
+      }
     }
-  }
-}
