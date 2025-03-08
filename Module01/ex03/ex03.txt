@@ -1,0 +1,117 @@
+### File: main.cpp
+#include "../includes/Weapon.hpp"
+#include "../includes/HumanA.hpp"
+#include "../includes/HumanB.hpp"
+
+int main()
+{
+{
+Weapon club = Weapon("crude spiked club");
+HumanA bob("Bob", club);
+bob.attack();
+club.setType("some other type of club");
+bob.attack();
+}
+{
+Weapon club = Weapon("crude spiked club");
+HumanB jim("Jim");
+jim.setWeapon(club);
+jim.attack();
+club.setType("some other type of club");
+jim.attack();
+}
+return 0;
+}
+
+### File: Weapon.cpp
+#include "../includes/Weapon.hpp"
+
+std::string& Weapon::getType() const { return this->type&; }
+std::string& Weapon::setType(std::string NewType) {
+	this->type = _type;
+}
+
+### File: HumanA.cpp
+#include "../includes/HumanA.hpp"
+
+void HumanA::attack() {
+	std::cout << HumanA::name << "attacks with their" << HumanA.Weapon.getType() << std::endl	
+}
+
+### File: HumanB.cpp
+#include "../includes/HumanB.hpp"
+
+void HumanB::attack() {
+	std::cout << HumanA.name << "attacks with their" << HumanA.Weapon.getType() << std::endl	
+}
+
+### File: Weapon.hpp
+#ifndef WEAPON_H
+# define WEAPON_H
+
+#include <string>
+
+class Weapon {
+private:
+    std::string type;
+
+public:
+    Weapon();
+    Weapon(const std::string& name);
+    ~Weapon();
+
+
+    std::string& getType() const;
+    void setType(const std::string newType) ;
+};
+
+#endif
+
+
+### File: HumanA.hpp
+#ifndef HUMANA_H
+# define HUMANA_H
+
+#include "Weapon.hpp"
+#include <string>
+
+class HumanA {
+private:
+    
+
+public:
+    HumanA();
+    HumanA(const std::string _name, const std::string _weapon_type);
+    ~HumanA();
+    
+    std::string name;
+    Weapon::WeaponA;
+
+};
+
+#endif
+
+
+### File: HumanB.hpp
+#ifndef HUMANB_H
+# define HUMANB_H
+
+#include "Weapon.hpp"
+#include <string>
+
+class HumanB {
+private:
+    
+
+public:
+    HumanB();
+    HumanB(const std::string _name);
+    ~HumanB();
+    
+    std::string name;
+};
+
+#endif
+
+
+
