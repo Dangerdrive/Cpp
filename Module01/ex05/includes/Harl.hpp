@@ -1,19 +1,31 @@
-#ifndef HARL_H
-# define HARL_H
+#ifndef HARL_HPP
+#define HARL_HPP
 
-#include <iostream>
-#include <fstream>
 #include <string>
 
 class Harl {
 private:
-void debug( void );
-void info( void );
-void warning( void );
-void error( void );
+    // Private member functions for each complaint level
+    void debug();
+    void info();
+    void warning();
+    void error();
+
+    // Typedef for a pointer to a member function
+    typedef void (Harl::*ComplaintFunction)();
+
+    // Array of function pointers
+    ComplaintFunction complaintFunctions[4];
+
+    // Array of level names
+    std::string levels[4];
 
 public:
-void complain( std::string level );
-}
+    // Constructor
+    Harl();
+
+    // Public member function to complain
+    void complain(std::string level);
+};
 
 #endif
