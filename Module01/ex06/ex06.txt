@@ -1,0 +1,100 @@
+### File: Harl.hpp
+#ifndef HARL_HPP
+#define HARL_HPP
+
+#include <string>
+
+class Harl {
+private:
+    void debug();
+    void info();
+    void warning();
+    void error();
+
+public:
+    void filterComplaints(std::string level);
+};
+
+#endif
+
+
+### File: Harl.cpp
+
+#include "../includes/Harl.hpp"
+#include <iostream>
+
+void Harl::debug() {
+    std::cout << "[ DEBUG ]\n"
+              << "I love having extra bacon for my 7XL-double-cheese-triple-pickle-special-ketchup burger. I really do!\n"
+              << std::endl;
+}
+
+void Harl::info() {
+    std::cout << "[ INFO ]\n"
+              << "I cannot believe adding extra bacon costs more money. You didn’t put enough bacon in my burger! If you did, I wouldn’t be asking for more!\n"
+              << std::endl;
+}
+
+void Harl::warning() {
+    std::cout << "[ WARNING ]\n"
+              << "I think I deserve to have some extra bacon for free. I’ve been coming for years whereas you started working here since last month.\n"
+              << std::endl;
+}
+
+void Harl::error() {
+    std::cout << "[ ERROR ]\n"
+              << "This is unacceptable! I want to speak to the manager now.\n"
+              << std::endl;
+}
+
+void Harl::filterComplaints(std::string level) {
+    // Array of level names in order of severity
+    std::string levels[4] = {"DEBUG", "INFO", "WARNING", "ERROR"};
+
+    // Determine the starting index based on the input level
+    int startIndex = 0;
+    while (startIndex < 4 && levels[startIndex] != level) {
+        startIndex++;
+    }
+
+    // If the level is invalid, display a custom message
+    if (startIndex >= 4) {
+        std::cout << "[ Probably complaining about insignificant problems ]" << std::endl;
+        return;
+    }
+
+    switch (startIndex) {
+        case 0:
+            debug();
+        case 1:
+            info();
+        case 2:
+            warning();
+        case 3:
+            error();
+            break;
+        default:
+            break;
+    }
+}
+
+
+### File: main.cpp
+
+#include "../includes/Harl.hpp"
+#include <iostream>
+
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <level>" << std::endl;
+        return 1;
+    }
+
+    Harl harl;
+    harl.filterComplaints(argv[1]);
+
+    return 0;
+}
+
+
+
