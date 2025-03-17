@@ -6,26 +6,33 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/03/17 00:08:35 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:23:29 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Fixed.hpp"
+#include "ClapTrap.hpp"
 #include <iostream>
 
-int main(void) {
-    Fixed a;
-    Fixed const b(Fixed(5.05f) * Fixed(2));
+int main() {
+    // Create ClapTrap objects
+    ClapTrap clap1("Clappy");
+    ClapTrap clap2("Trappy");
 
-    std::cout << a << std::endl;
-    std::cout << ++a << std::endl;
-    std::cout << a << std::endl;
-    std::cout << a++ << std::endl;
-    std::cout << a << std::endl;
+    // Test attack function
+    clap1.attack("Trappy");
+    clap2.takeDamage(5);
 
-    std::cout << b << std::endl;
+    // Test repair function
+    clap2.beRepaired(3);
 
-    std::cout << Fixed::max(a, b) << std::endl;
+    // Test energy points and hit points
+    clap1.attack("Trappy");
+    clap1.attack("Trappy");
+    clap1.attack("Trappy"); // Should fail due to lack of energy points
+
+    // Test taking damage
+    clap2.takeDamage(10); // Should reduce hit points to 0
+    clap2.beRepaired(5); // Should fail due to lack of hit points
 
     return 0;
 }
