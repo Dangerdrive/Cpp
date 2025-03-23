@@ -67,7 +67,7 @@ re: fclean all
 
 # Test target
 test: all
-	@echo $(GREEN)[Creating test.txt\n]$(LIMITER)
+	@echo $(GREEN)[Creating test.txt]$(LIMITER)
 	@echo "This is the first paragraph.\nIt contains some text.\n\nThis is the second paragraph.\nIt also contains some text." > test.txt
 	@echo $(GREEN)[Content of test.txt before modification]$(LIMITER)
 	@cat test.txt

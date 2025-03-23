@@ -18,7 +18,7 @@ RM		=	rm -rf
 
 # Dir and file names
 NAME	=	moar
-SRCS	=	./src/main.cpp ./src/Zombie.cpp ./src/zombieHorde.cpp
+SRCS	=	./src/main.cpp ./src/zombieHorde.cpp ./src/Zombie.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)
