@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:43 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/03/17 00:22:57 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/09 23:28:34 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,13 @@ private:
     unsigned int _attackDamage; // Attack damage
 
 public:
-    // Constructors and Destructor
     ClapTrap();
     ClapTrap(const std::string& name);
     ClapTrap(const ClapTrap& other);
     ~ClapTrap();
 
-    // Copy assignment operator
     ClapTrap& operator=(const ClapTrap& other);
 
-    // Member functions
     void attack(const std::string& target);
     void takeDamage(unsigned int amount);
     void beRepaired(unsigned int amount);
