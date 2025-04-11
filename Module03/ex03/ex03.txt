@@ -1,0 +1,470 @@
+### File: main.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/23 12:32:36 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 14:30:01 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "DiamondTrap.hpp"
+#include <iostream>
+
+int main() {
+    // Create DiamondTrap objects
+    DiamondTrap diamond1("Diamondy");
+    DiamondTrap diamond2("Trapster");
+
+    // Test attack function
+    diamond1.attack("Trapster");
+    diamond2.takeDamage(20);
+
+    // Test repair function
+    diamond2.beRepaired(10);
+
+    // Test special capacity
+    diamond1.whoAmI();
+
+    // Test energy points and hit points
+    diamond1.attack("Trapster");
+    diamond1.attack("Trapster");
+    diamond1.attack("Trapster"); // Should fail due to lack of energy points
+
+    // Test taking damage
+    diamond2.takeDamage(100); // Should reduce hit points to 0
+    diamond2.beRepaired(5); // Should fail due to lack of hit points
+
+    return 0;
+}
+
+
+### File: FragTrap.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   FragTrap.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:31 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 13:25:19 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "FragTrap.hpp"
+#include <iostream>
+
+// Default constructor
+FragTrap::FragTrap() : ClapTrap("Default FragTrap") {
+    _hitPoints = 100;
+    _energyPoints = 100;
+    _attackDamage = 30;
+    std::cout << "FragTrap Default constructor called" << std::endl;
+}
+
+// Parameterized constructor
+FragTrap::FragTrap(const std::string& name) : ClapTrap(name) {
+    _hitPoints = 100;
+    _energyPoints = 100;
+    _attackDamage = 30;
+    std::cout << "FragTrap " << _name << " constructor called" << std::endl;
+}
+
+// Copy constructor
+FragTrap::FragTrap(const FragTrap& other) : ClapTrap(other) {
+    std::cout << "FragTrap Copy constructor called" << std::endl;
+}
+
+// Copy assignment operator
+FragTrap& FragTrap::operator=(const FragTrap& other) {
+    std::cout << "FragTrap Copy assignment operator called" << std::endl;
+    if (this != &other) { // Check for self-assignment
+        ClapTrap::operator=(other); // Call base class assignment operator
+    }
+    return *this;
+}
+
+// Destructor
+FragTrap::~FragTrap() {
+    std::cout << "FragTrap " << _name << " destructor called" << std::endl;
+}
+
+// Override attack function
+void FragTrap::attack(const std::string& target) {
+    if (_hitPoints == 0 || _energyPoints == 0) {
+        std::cout << "FragTrap " << _name << " can't attack. No hit points or energy points left!" << std::endl;
+        return;
+    }
+    _energyPoints--; // Attack costs 1 energy point
+    std::cout << "FragTrap " << _name << " attacks " << target << ", causing " << _attackDamage << " points of damage!" << std::endl;
+}
+
+// Special capacity
+void FragTrap::highFivesGuys() {
+    std::cout << "FragTrap " << _name << " requests a positive high five!" << std::endl;
+}
+
+
+### File: ScavTrap.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ScavTrap.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:31 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 13:19:19 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ScavTrap.hpp"
+#include <iostream>
+
+ScavTrap::ScavTrap() : ClapTrap("Default") {
+    _hitPoints = 100;
+    _energyPoints = 50;
+    _attackDamage = 20;
+    std::cout << "ScavTrap Default constructor called" << std::endl;
+}
+
+ScavTrap::ScavTrap(const std::string& name) : ClapTrap(name) {
+    _hitPoints = 100;
+    _energyPoints = 50;
+    _attackDamage = 20;
+    std::cout << "ScavTrap " << _name << " constructor called" << std::endl;
+}
+
+ScavTrap::ScavTrap(const ScavTrap& other) : ClapTrap(other) {
+    std::cout << "ScavTrap Copy constructor called" << std::endl;
+}
+
+ScavTrap& ScavTrap::operator=(const ScavTrap& other) {
+    std::cout << "ScavTrap Copy assignment operator called" << std::endl;
+    if (this != &other) {
+        ClapTrap::operator=(other);
+    }
+    return *this;
+}
+
+ScavTrap::~ScavTrap() {
+    std::cout << "ScavTrap " << _name << " destructor called" << std::endl;
+}
+
+void ScavTrap::attack(const std::string& target) {
+    if (_hitPoints == 0 || _energyPoints == 0) {
+        std::cout << "ScavTrap " << _name << " can't attack. No hit points or energy points left!" << std::endl;
+        return;
+    }
+    _energyPoints--;
+    std::cout << "ScavTrap " << _name << " attacks " << target << ", causing " << _attackDamage << " points of damage!" << std::endl;
+}
+
+void ScavTrap::guardGate() {
+    std::cout << "ScavTrap " << _name << " is now in Gate keeper mode." << std::endl;
+}
+
+
+### File: DiamondTrap.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   DiamondTrap.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:31 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 14:26:33 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "DiamondTrap.hpp"
+#include <iostream>
+
+// Default constructor
+DiamondTrap::DiamondTrap() : ClapTrap("Default DiamondTrap_clap_name"), FragTrap(), ScavTrap() {
+    _name = "Default DiamondTrap";
+    _hitPoints = FragTrap::_hitPoints; // Use FragTrap's hit points
+    _energyPoints = ScavTrap::_energyPoints; // Use ScavTrap's energy points
+    _attackDamage = FragTrap::_attackDamage; // Use FragTrap's attack damage
+    std::cout << "DiamondTrap Default constructor called" << std::endl;
+}
+
+// Parameterized constructor
+DiamondTrap::DiamondTrap(const std::string& name) : ClapTrap(name + "_clap_name"), FragTrap(), ScavTrap() {
+    _name = name;
+    _hitPoints = FragTrap::_hitPoints; // Use FragTrap's hit points
+    _energyPoints = ScavTrap::_energyPoints; // Use ScavTrap's energy points
+    _attackDamage = FragTrap::_attackDamage; // Use FragTrap's attack damage
+    std::cout << "DiamondTrap " << _name << " constructor called" << std::endl;
+}
+
+// Copy constructor
+DiamondTrap::DiamondTrap(const DiamondTrap& other) : ClapTrap(other), FragTrap(other), ScavTrap(other) {
+    _name = other._name;
+    std::cout << "DiamondTrap Copy constructor called" << std::endl;
+}
+
+DiamondTrap& DiamondTrap::operator=(const DiamondTrap& other) {
+    std::cout << "DiamondTrap Copy assignment operator called" << std::endl;
+    if (this != &other) {
+        ClapTrap::operator=(other);
+        FragTrap::operator=(other);
+        ScavTrap::operator=(other);
+        _name = other._name;
+    }
+    return *this;
+}
+
+DiamondTrap::~DiamondTrap() {
+    std::cout << "DiamondTrap " << _name << " destructor called" << std::endl;
+}
+
+void DiamondTrap::attack(const std::string& target) {
+    ScavTrap::attack(target); // Use ScavTrap's attack function
+}
+
+// Special capacity
+void DiamondTrap::whoAmI() {
+    std::cout << "DiamondTrap name: " << _name << ", ClapTrap name: " << ClapTrap::_name << std::endl;
+}
+
+
+### File: ClapTrap.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ClapTrap.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:31 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 11:57:55 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ClapTrap.hpp"
+#include <iostream>
+
+ClapTrap::ClapTrap() : _name("Default"), _hitPoints(10), _energyPoints(10), _attackDamage(0) {
+    std::cout << "ClapTrap Default constructor called" << std::endl;
+}
+
+ClapTrap::ClapTrap(const std::string& name) : _name(name), _hitPoints(10), _energyPoints(10), _attackDamage(0) {
+    std::cout << "ClapTrap " << _name << " constructor called" << std::endl;
+}
+
+ClapTrap::ClapTrap(const ClapTrap& other) {
+    std::cout << "ClapTrap Copy constructor called" << std::endl;
+    *this = other;
+}
+
+ClapTrap& ClapTrap::operator=(const ClapTrap& other) {
+    std::cout << "ClapTrap Copy assignment operator called" << std::endl;
+    if (this != &other) {
+        this->_name = other._name;
+        this->_hitPoints = other._hitPoints;
+        this->_energyPoints = other._energyPoints;
+        this->_attackDamage = other._attackDamage;
+    }
+    return *this;
+}
+
+ClapTrap::~ClapTrap() {
+    std::cout << "ClapTrap " << _name << " destructor called" << std::endl;
+}
+
+void ClapTrap::attack(const std::string& target) {
+    if (_hitPoints == 0 || _energyPoints == 0) {
+        std::cout << "ClapTrap " << _name << " can't attack. No hit points or energy points left!" << std::endl;
+        return;
+    }
+    _energyPoints--;
+    std::cout << "ClapTrap " << _name << " attacks " << target << ", causing " << _attackDamage << " points of damage!" << std::endl;
+}
+
+// Take damage function
+void ClapTrap::takeDamage(unsigned int amount) {
+    if (_hitPoints == 0) {
+        std::cout << "ClapTrap " << _name << " is already out of hit points!" << std::endl;
+        return;
+    }
+    if (amount >= _hitPoints) {
+        _hitPoints = 0;
+    } else {
+        _hitPoints -= amount;
+    }
+    std::cout << "ClapTrap " << _name << " takes " << amount << " points of damage! It now has " << _hitPoints << " hit points." << std::endl;
+}
+
+// Be repaired function
+void ClapTrap::beRepaired(unsigned int amount) {
+    if (_hitPoints == 0 || _energyPoints == 0) {
+        std::cout << "ClapTrap " << _name << " can't be repaired. No hit points or energy points left!" << std::endl;
+        return;
+    }
+    _energyPoints--; // Repair costs 1 energy point
+    _hitPoints += amount;
+    std::cout << "ClapTrap " << _name << " is repaired for " << amount << " hit points! It now has " << _hitPoints << " hit points." << std::endl;
+}
+
+
+### File: DiamondTrap.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   DiamondTrap.hpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/23 12:12:01 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 14:23:35 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef DIAMONDTRAP_HPP
+#define DIAMONDTRAP_HPP
+
+#include "FragTrap.hpp"
+#include "ScavTrap.hpp"
+#include <string>
+
+class DiamondTrap : public FragTrap, public ScavTrap {
+private:
+    std::string _name;
+
+public:
+    DiamondTrap();
+    DiamondTrap(const std::string& name);
+    DiamondTrap(const DiamondTrap& other);
+    ~DiamondTrap();
+
+    DiamondTrap& operator=(const DiamondTrap& other);
+
+    void attack(const std::string& target);
+
+    void whoAmI();
+};
+
+#endif
+
+
+### File: FragTrap.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   FragTrap.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/23 12:12:01 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 14:51:33 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef FRAGTRAP_HPP
+#define FRAGTRAP_HPP
+
+#include "ClapTrap.hpp"
+#include <string>
+
+class FragTrap : virtual public ClapTrap {
+public:
+    FragTrap();
+    FragTrap(const std::string& name);
+    FragTrap(const FragTrap& other);
+    ~FragTrap();
+
+    FragTrap& operator=(const FragTrap& other);
+
+    void attack(const std::string& target);
+
+    void highFivesGuys();
+};
+
+#endif
+
+
+### File: ClapTrap.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ClapTrap.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:43 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 13:07:34 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef CLAPTRAP_HPP
+#define CLAPTRAP_HPP
+
+#include <string>
+
+class ClapTrap {
+protected:
+    std::string _name;
+    unsigned int _hitPoints;
+    unsigned int _energyPoints;
+    unsigned int _attackDamage;
+
+public:
+    ClapTrap();
+    ClapTrap(const std::string& name);
+    ClapTrap(const ClapTrap& other);
+    ~ClapTrap();
+
+    ClapTrap& operator=(const ClapTrap& other);
+
+    void attack(const std::string& target);
+    void takeDamage(unsigned int amount);
+    void beRepaired(unsigned int amount);
+};
+
+#endif
+
+
+### File: ScavTrap.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ScavTrap.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/23 12:12:01 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/03/23 14:51:41 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef SCAVTRAP_HPP
+#define SCAVTRAP_HPP
+
+#include "ClapTrap.hpp"
+#include <string>
+
+class ScavTrap : virtual public ClapTrap {
+public:
+
+    ScavTrap();
+    ScavTrap(const std::string& name);
+    ScavTrap(const ScavTrap& other);
+    ~ScavTrap();
+
+    ScavTrap& operator=(const ScavTrap& other);
+
+    void attack(const std::string& target);
+
+    void guardGate();
+};
+
+#endif
+
+
+

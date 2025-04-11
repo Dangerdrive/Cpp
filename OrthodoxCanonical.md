@@ -89,3 +89,6 @@ However, understanding the Orthodox Canonical Form remains valuable, especially 
 ## Summary
 
 The Orthodox Canonical Form is a foundational concept in C++ that ensures proper resource management and predictable behavior for classes. By implementing the **default constructor**, **copy constructor**, **copy assignment operator**, and **destructor**, you can create robust and reliable classes in C++98 and beyond.
+
+
+pro 9 tem um cara de lyon 
