@@ -34,6 +34,9 @@ LIMITER =	"\033[0m"
 #------------------------------------------------------------------------------#
 
 all: $(BIN_DIR) $(NAME)
+	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
+	@echo 
+	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
 
 # Generates output file
 $(NAME): $(OBJS)

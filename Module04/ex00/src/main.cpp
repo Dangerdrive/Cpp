@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/10 23:57:10 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:29:54 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@
 #include "WrongCat.hpp"
 
 int main() {
-    // Test with proper virtual functions
-    std::cout << "----- Proper Animal Tests -----" << std::endl;
+    std::cout << "----- Proper Animal Tests / Virtual -----" << std::endl;
     const Animal* meta = new Animal();
     const Animal* j = new Dog();
     const Animal* i = new Cat();
@@ -34,8 +33,7 @@ int main() {
     delete j;
     delete i;
 
-    // Test with wrong non-virtual functions
-    std::cout << "\n----- Wrong Animal Tests -----" << std::endl;
+    std::cout << "\n----- Wrong Animal Tests / non Virtual -----" << std::endl;
     const WrongAnimal* wrongMeta = new WrongAnimal();
     const WrongAnimal* wrongCat = new WrongCat();
 
@@ -46,7 +44,6 @@ int main() {
     delete wrongMeta;
     delete wrongCat;
 
-    // Additional tests
     std::cout << "\n----- Additional Tests -----" << std::endl;
     Animal* animals[4];
     animals[0] = new Dog();

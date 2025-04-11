@@ -16,8 +16,8 @@ CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	fire
-SRCS	=	./src/Animal.cpp ./src/Brain.cpp  ./src/Cat.cpp  ./src/Dog.cpp  ./src/WrongAnimal.cpp  ./src/WrongCat.cpp  ./src/main.cpp
+NAME	=	abstract
+SRCS	=	./src/AAnimal.cpp ./src/Brain.cpp  ./src/Cat.cpp  ./src/Dog.cpp  ./src/WrongAnimal.cpp  ./src/WrongCat.cpp  ./src/main.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)
