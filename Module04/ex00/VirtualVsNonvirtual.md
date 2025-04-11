@@ -1,122 +1,138 @@
-# Behavior of Non-Virtual Methods in Inheritance
+# Animal Hierarchy Exercise - Introduction to Polymorphism
 
-If `makeSound()` in the base `Animal` class wasn't declared as `virtual`, the behavior would be fundamentally different, even if derived classes appear to override it. Here's what would happen:
+## Overview
+This exercise introduces fundamental object-oriented programming concepts through an animal hierarchy, with a primary focus on **polymorphism** - one of the three pillars of OOP (alongside encapsulation and inheritance).
 
-## Key Differences Without `virtual`
+## Key Concepts Demonstrated
 
-### 1. Compile-Time Binding (Static Dispatch)
-Without `virtual`, method calls are resolved at **compile time** based on the **reference/pointer type**, not the actual object type.
-
+### 1. Base Class and Inheritance
 ```cpp
-Animal* animal = new Dog();
-animal->makeSound(); // Calls Animal::makeSound(), not Dog::makeSound()
-delete animal;
-```
-
-### 2. Method Hiding (Not Overriding)
-Derived class methods with the same name would **hide** rather than **override** the base class method:
-
-```cpp
-Dog dog;
-dog.makeSound(); // Calls Dog::makeSound() - but only because we're using concrete type
-Animal& animalRef = dog;
-animalRef.makeSound(); // Calls Animal::makeSound() - not polymorphic!
-```
-
-### 3. No Runtime Polymorphism
-The crucial polymorphic behavior would be lost:
-```cpp
-void makeAnimalSound(Animal& a) {
-    a.makeSound(); // Always calls Animal::makeSound()
-}
-
-Dog d;
-Cat c;
-makeAnimalSound(d); // Animal sound!
-makeAnimalSound(c); // Animal sound!
-```
-
-## Your Specific Example Analysis
-
-Given your header files:
-
-### Animal.hpp (non-virtual version)
-```cpp
-void makeSound() const; // NOT virtual
-```
-
-### Dog.hpp/Cat.hpp
-```cpp
-virtual void makeSound() const; // virtual here is irrelevant
-```
-
-### What Actually Happens:
-1. **Base Class Method is Non-Virtual**:
-   - `Animal::makeSound()` determines the binding behavior
-   - The `virtual` in derived classes is ineffective because the base version isn't virtual
-
-2. **Unexpected Behavior**:
-   ```cpp
-   Animal* animals[2];
-   animals[0] = new Dog();
-   animals[1] = new Cat();
-   
-   animals[0]->makeSound(); // Calls Animal::makeSound()
-   animals[1]->makeSound(); // Calls Animal::makeSound()
-   ```
-
-## Why This Matters
-
-### Real-World Implications:
-1. **Broken Polymorphism**: Treating different animals uniformly wouldn't work
-2. **Unexpected Behavior**: Code appears correct but doesn't work as intended
-3. **Maintenance Issues**: Future developers might assume polymorphism exists
-
-### Correct Approach:
-Always declare methods as `virtual` in the base class when you want:
-- Runtime polymorphism
-- Method overriding (not just hiding)
-- The ability to call derived implementations through base pointers/references
-
-## Demonstration Code
-
-```cpp
-#include <iostream>
-using namespace std;
-
 class Animal {
-public:
-    void makeSound() const { cout << "Generic animal sound\n"; }
+    // Base class with virtual functions
 };
 
 class Dog : public Animal {
-public:
-    virtual void makeSound() const { cout << "Woof woof!\n"; }
+    // Derived class
 };
 
+class Cat : public Animal {
+    // Derived class
+};
+```
+- `Animal` serves as the base class
+- `Dog` and `Cat` inherit from `Animal`
+- Establishes "is-a" relationships (Dog is an Animal)
+
+### 2. Polymorphic Behavior
+The core objective is demonstrating **runtime polymorphism** through:
+
+**Virtual Functions:**
+```cpp
+virtual void makeSound() const; // Base class
+```
+- Allows derived classes to override behavior
+- Enables dynamic dispatch (calling the right version at runtime)
+
+**Example Usage:**
+```cpp
+Animal* animal = new Dog();
+animal->makeSound(); // Calls Dog's implementation
+delete animal;
+```
+
+### 3. Virtual Destructor
+```cpp
+virtual ~Animal(); // Crucial for proper cleanup
+```
+- Ensures derived class destructors are called
+- Prevents memory leaks in polymorphic hierarchies
+
+## Exercise Objectives
+
+### Primary Learning Goals
+1. **Understand polymorphism**: Treat different objects uniformly through base class pointers/references
+2. **Implement virtual functions**: Enable runtime method dispatch
+3. **Recognize inheritance relationships**: Design proper class hierarchies
+4. **Practice proper resource cleanup**: Use virtual destructors
+
+### Key Polymorphism Concepts
+- **Base class interface**: Common API for all animals
+- **Derived class implementations**: Specific behaviors for each animal type
+- **Runtime binding**: Correct function called based on actual object type
+- **Extensibility**: New animal types can be added without modifying existing code
+
+## Implementation Details
+
+### Critical Components
+1. **Virtual Function Declaration**:
+```cpp
+class Animal {
+public:
+    virtual void makeSound() const; // Enables overriding
+};
+```
+
+2. **Function Overriding**:
+```cpp
+class Dog : public Animal {
+public:
+    void makeSound() const override; // Dog-specific implementation
+};
+```
+
+3. **Polymorphic Usage**:
+```cpp
+void animalSound(const Animal& animal) {
+    animal.makeSound(); // Calls appropriate version
+}
+
+// Can pass Dogs, Cats, or any Animal-derived class
+```
+
+## Testing the Implementation
+
+### Sample Test Code
+```cpp
 int main() {
-    // Case 1: Direct call - works as expected
-    Dog d;
-    d.makeSound(); // "Woof woof!"
+    Animal* animals[2];
+    animals[0] = new Dog();
+    animals[1] = new Cat();
     
-    // Case 2: Polymorphic call - fails
-    Animal* a = new Dog();
-    a->makeSound(); // "Generic animal sound" - NOT polymorphic!
-    delete a;
-    
-    // Case 3: Reference call - fails
-    Animal& ref = d;
-    ref.makeSound(); // "Generic animal sound"
+    for (int i = 0; i < 2; ++i) {
+        animals[i]->makeSound(); // Polymorphic call
+        delete animals[i];       // Proper cleanup
+    }
     
     return 0;
 }
 ```
 
-## Key Takeaways
+### Expected Output
+```
+Animal constructor
+Dog constructor
+Animal constructor
+Cat constructor
+Woof woof!
+Meow meow!
+Dog destructor
+Animal destructor
+Cat destructor
+Animal destructor
+```
 
-1. **Virtual in Base Class Controls Polymorphism**: The base class declaration determines the binding behavior
-2. **Virtual in Derived Classes is Meaningless** if base isn't virtual
-3. **Polymorphism Requires Virtual at the Root**: The virtual keyword must start at the level where you want polymorphism to begin
-4. **Compiler Warnings**: Modern compilers may warn about this situation with messages like "overriding non-virtual function"
+## Why This Matters
 
-Always make methods virtual in the base class if you want polymorphic behavior through pointers/references to the base class.
+### Real-World Applications
+- Game development (different enemy behaviors)
+- GUI frameworks (various UI elements)
+- Payment processing (different payment methods)
+- Any system needing flexible, extensible object types
+
+### Fundamental OOP Principles
+1. **Abstraction**: Hide implementation details
+2. **Polymorphism**: Uniform interface for different types
+3. **Inheritance**: Code reuse through hierarchical relationships
+4. **Encapsulation**: Protect internal object state
+
+This exercise establishes the foundation for understanding how polymorphic systems enable flexible, maintainable object-oriented designs.
