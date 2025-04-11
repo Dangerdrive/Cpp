@@ -6,33 +6,58 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/03/17 00:23:29 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/10 23:57:10 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ClapTrap.hpp"
-#include <iostream>
+#include "Animal.hpp"
+#include "Dog.hpp"
+#include "Cat.hpp"
+#include "WrongAnimal.hpp"
+#include "WrongCat.hpp"
 
 int main() {
-    // Create ClapTrap objects
-    ClapTrap clap1("Clappy");
-    ClapTrap clap2("Trappy");
+    // Test with proper virtual functions
+    std::cout << "----- Proper Animal Tests -----" << std::endl;
+    const Animal* meta = new Animal();
+    const Animal* j = new Dog();
+    const Animal* i = new Cat();
 
-    // Test attack function
-    clap1.attack("Trappy");
-    clap2.takeDamage(5);
+    std::cout << j->getType() << " " << std::endl;
+    std::cout << i->getType() << " " << std::endl;
 
-    // Test repair function
-    clap2.beRepaired(3);
+    i->makeSound(); // will output the cat sound!
+    j->makeSound();
+    meta->makeSound();
 
-    // Test energy points and hit points
-    clap1.attack("Trappy");
-    clap1.attack("Trappy");
-    clap1.attack("Trappy"); // Should fail due to lack of energy points
+    delete meta;
+    delete j;
+    delete i;
 
-    // Test taking damage
-    clap2.takeDamage(10); // Should reduce hit points to 0
-    clap2.beRepaired(5); // Should fail due to lack of hit points
+    // Test with wrong non-virtual functions
+    std::cout << "\n----- Wrong Animal Tests -----" << std::endl;
+    const WrongAnimal* wrongMeta = new WrongAnimal();
+    const WrongAnimal* wrongCat = new WrongCat();
+
+    std::cout << wrongCat->getType() << " " << std::endl;
+    wrongCat->makeSound(); // will output the WrongAnimal sound!
+    wrongMeta->makeSound();
+
+    delete wrongMeta;
+    delete wrongCat;
+
+    // Additional tests
+    std::cout << "\n----- Additional Tests -----" << std::endl;
+    Animal* animals[4];
+    animals[0] = new Dog();
+    animals[1] = new Cat();
+    animals[2] = new Dog();
+    animals[3] = new Cat();
+
+    for (int i = 0; i < 4; i++) {
+        animals[i]->makeSound();
+        delete animals[i];
+    }
 
     return 0;
 }

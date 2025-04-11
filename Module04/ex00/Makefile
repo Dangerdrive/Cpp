@@ -17,8 +17,8 @@ CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	claptrap
-SRCS	=	./src/main.cpp ./src/ClapTrap.cpp
+NAME	=	polimorphism
+SRCS	=	./src/Animal.cpp  ./src/Cat.cpp  ./src/Dog.cpp  ./src/WrongAnimal.cpp  ./src/WrongCat.cpp  ./src/main.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)
