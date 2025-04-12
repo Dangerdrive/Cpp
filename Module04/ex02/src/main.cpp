@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/11 18:08:27 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/11 20:10:21 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@
 
 int main() {
     // 1. Verify abstract class cannot be instantiated (uncomment for error)
-    AAnimal abstract; // Should cause compilation error
+    //AAnimal abstract; // Should cause compilation error
     
     // 2. Polymorphic behavior test
     {
+        std::cout << "\n----- Polymorphic behavior test -----" << std::endl;
+
         const AAnimal* dog = new Dog();
         const AAnimal* cat = new Cat();
         
@@ -33,6 +35,7 @@ int main() {
     
     // 3. Array test (heterogeneous collection)
     {
+        std::cout << "\n----- Array test -----" << std::endl;
         AAnimal* zoo[4];
         for (int i = 0; i < 2; i++) {
             zoo[i] = new Dog();
@@ -47,6 +50,7 @@ int main() {
     
     // 4. Deep copy test
     {
+        std::cout << "\n----- Deep copy test -----" << std::endl;
         Dog dog1;
         dog1.getBrain()->setIdea(0, "Original thought");
         
@@ -60,6 +64,7 @@ int main() {
     
     // 5. Assignment test
     {
+        std::cout << "\n----- Assignment test -----" << std::endl;
         Cat cat1;
         Cat cat2;
         cat1.getBrain()->setIdea(0, "First idea");

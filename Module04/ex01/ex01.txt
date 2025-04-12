@@ -1,0 +1,605 @@
+### File: main.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 19:44:42 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Animal.hpp"
+#include "Dog.hpp"
+#include "Cat.hpp"
+#include "WrongAnimal.hpp"
+#include "WrongCat.hpp"
+#include <iostream>
+
+void run_wrong_animal_tests() {
+    std::cout << "\n----- Wrong Animal Tests with Brain (Dangerous!) -----" << std::endl;
+    
+    // Create WrongCat (which has a Brain)
+    const WrongAnimal* wrongCat = new WrongCat();
+    
+    std::cout << wrongCat->getType() << std::endl;
+    wrongCat->makeSound(); // Will output WrongAnimal sound (no polymorphism)
+    
+    // This will ONLY call WrongAnimal's destructor!
+    // WrongCat's destructor (and its Brain) will leak!
+    delete wrongCat; 
+    
+    std::cout << "--- Check your memory leaks now! ---" << std::endl;
+}
+
+
+int main() {
+    // Test basic functionality
+    {
+        std::cout << "----- Basic Test -----" << std::endl;
+        const Animal* j = new Dog();
+        const Animal* i = new Cat();
+
+        std::cout << j->getType() << " " << std::endl;
+        std::cout << i->getType() << " " << std::endl;
+
+        i->makeSound();
+        j->makeSound();
+
+        delete j;
+        delete i;
+    }
+
+    // Test array of animals
+    {
+        std::cout << "\n----- Array Test -----" << std::endl;
+        const int numAnimals = 4;
+        Animal* animals[numAnimals];
+
+        for (int i = 0; i < numAnimals/2; i++) {
+            animals[i] = new Dog();
+        }
+        for (int i = numAnimals/2; i < numAnimals; i++) {
+            animals[i] = new Cat();
+        }
+
+        for (int i = 0; i < numAnimals; i++) {
+            animals[i]->makeSound();
+            delete animals[i];
+        }
+    }
+
+    // Test deep copy
+    {
+        std::cout << "\n----- Deep Copy Test -----" << std::endl;
+        Dog original;
+        original.getBrain()->setIdea(0, "I want to play!");
+
+        Dog copy(original);
+        std::cout << "Original's first idea: " << original.getBrain()->getIdea(0) << std::endl;
+        std::cout << "Copy's first idea: " << copy.getBrain()->getIdea(0) << std::endl;
+
+        // Modify the copy's brain
+        copy.getBrain()->setIdea(0, "I want to sleep!");
+        std::cout << "After modification:" << std::endl;
+        std::cout << "Original's first idea: " << original.getBrain()->getIdea(0) << std::endl;
+        std::cout << "Copy's first idea: " << copy.getBrain()->getIdea(0) << std::endl;
+    }
+
+    //uncomment line below to show wrong/leaky behaviour
+    run_wrong_animal_tests();
+
+    return 0;
+}
+
+
+### File: WrongAnimal.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   WrongAnimal.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:54:05 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:54:06 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "WrongAnimal.hpp"
+
+WrongAnimal::WrongAnimal() : type("WrongAnimal") {
+    std::cout << "WrongAnimal default constructor called" << std::endl;
+}
+
+WrongAnimal::WrongAnimal(const WrongAnimal& other) {
+    std::cout << "WrongAnimal copy constructor called" << std::endl;
+    *this = other;
+}
+
+WrongAnimal& WrongAnimal::operator=(const WrongAnimal& other) {
+    std::cout << "WrongAnimal assignment operator called" << std::endl;
+    if (this != &other) {
+        type = other.type;
+    }
+    return *this;
+}
+
+WrongAnimal::~WrongAnimal() {
+    std::cout << "WrongAnimal destructor called" << std::endl;
+}
+
+std::string WrongAnimal::getType() const {
+    return type;
+}
+
+void WrongAnimal::makeSound() const {
+    std::cout << "WrongAnimal sound!" << std::endl;
+}
+
+
+### File: Brain.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Brain.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:43 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:10:38 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Brain.hpp"
+#include <iostream>
+#include <sstream>
+
+// Removed namespace and made helper function static
+static std::string intToString(int num) {
+    std::stringstream ss;
+    ss << num;
+    return ss.str();
+}
+
+Brain::Brain() {
+    std::cout << "Brain default constructor called" << std::endl;
+    for (int i = 0; i < 100; i++) {
+        ideas[i] = "Idea #" + intToString(i + 1);
+    }
+}
+
+Brain::Brain(const Brain& other) {
+    std::cout << "Brain copy constructor called" << std::endl;
+    for (int i = 0; i < 100; i++) {
+        ideas[i] = other.ideas[i];
+    }
+}
+
+Brain& Brain::operator=(const Brain& other) {
+    std::cout << "Brain assignment operator called" << std::endl;
+    if (this != &other) {
+        for (int i = 0; i < 100; i++) {
+            ideas[i] = other.ideas[i];
+        }
+    }
+    return *this;
+}
+
+Brain::~Brain() {
+    std::cout << "Brain destructor called" << std::endl;
+}
+
+void Brain::setIdea(int index, const std::string& idea) {
+    if (index >= 0 && index < 100) {
+        ideas[index] = idea;
+    }
+}
+
+std::string Brain::getIdea(int index) const {
+    if (index >= 0 && index < 100) {
+        return ideas[index];
+    }
+    return "";
+}
+
+
+### File: Animal.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Animal.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:52:55 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:53:04 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Animal.hpp"
+
+Animal::Animal() : type("Animal") {
+    std::cout << "Animal default constructor called" << std::endl;
+}
+
+Animal::Animal(const Animal& other) {
+    std::cout << "Animal copy constructor called" << std::endl;
+    *this = other;
+}
+
+Animal& Animal::operator=(const Animal& other) {
+    std::cout << "Animal assignment operator called" << std::endl;
+    if (this != &other) {
+        type = other.type;
+    }
+    return *this;
+}
+
+Animal::~Animal() {
+    std::cout << "Animal destructor called" << std::endl;
+}
+
+std::string Animal::getType() const {
+    return type;
+}
+
+void Animal::makeSound() const {
+    std::cout << "Animal sound!" << std::endl;
+}
+
+
+### File: Cat.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Cat.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:53:33 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:12:02 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Cat.hpp"
+
+Cat::Cat() : Animal() {
+    type = "Cat";
+    brain = new Brain();
+    std::cout << "Cat default constructor called" << std::endl;
+}
+
+Cat::Cat(const Cat& other) : Animal(other) {
+    std::cout << "Cat copy constructor called" << std::endl;
+    brain = new Brain(*other.brain);
+}
+
+Cat& Cat::operator=(const Cat& other) {
+    std::cout << "Cat assignment operator called" << std::endl;
+    if (this != &other) {
+        Animal::operator=(other);
+        delete brain;
+        brain = new Brain(*other.brain);
+    }
+    return *this;
+}
+
+Cat::~Cat() {
+    std::cout << "Cat destructor called" << std::endl;
+    delete brain;
+}
+
+void Cat::makeSound() const {
+    std::cout << "Meow meow!" << std::endl;
+}
+
+Brain* Cat::getBrain() const {
+    return brain;
+}
+
+
+### File: Dog.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Dog.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:53:19 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:13:51 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Dog.hpp"
+
+Dog::Dog() : Animal() {
+    type = "Dog";
+    brain = new Brain();
+    std::cout << "Dog default constructor called" << std::endl;
+}
+
+Dog::Dog(const Dog& other) : Animal(other) {
+    std::cout << "Dog copy constructor called" << std::endl;
+    brain = new Brain(*other.brain);
+}
+
+Dog& Dog::operator=(const Dog& other) {
+    std::cout << "Dog assignment operator called" << std::endl;
+    if (this != &other) {
+        Animal::operator=(other);
+        delete brain;
+        brain = new Brain(*other.brain);
+    }
+    return *this;
+}
+
+Dog::~Dog() {
+    std::cout << "Dog destructor called" << std::endl;
+    delete brain;
+}
+
+void Dog::makeSound() const {
+    std::cout << "Woof woof!" << std::endl;
+}
+
+Brain* Dog::getBrain() const {
+    return brain;
+}
+
+
+### File: WrongCat.cpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   WrongCat.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:52:55 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:54:37 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "WrongCat.hpp"
+
+WrongCat::WrongCat() {
+    type = "WrongCat";
+    std::cout << "WrongCat default constructor called" << std::endl;
+}
+
+WrongCat::WrongCat(const WrongCat& other) : WrongAnimal(other) {
+    std::cout << "WrongCat copy constructor called" << std::endl;
+}
+
+WrongCat& WrongCat::operator=(const WrongCat& other) {
+    std::cout << "WrongCat assignment operator called" << std::endl;
+    if (this != &other) {
+        WrongAnimal::operator=(other);
+    }
+    return *this;
+}
+
+WrongCat::~WrongCat() {
+    std::cout << "WrongCat destructor called" << std::endl;
+}
+
+void WrongCat::makeSound() const {
+    std::cout << "Wrong meow!" << std::endl;
+}
+
+
+### File: Brain.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Brain.hpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:43 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:02:44 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef BRAIN_HPP
+#define BRAIN_HPP
+
+#include <string>
+
+class Brain {
+private:
+    std::string ideas[100];
+
+public:
+    Brain();
+    Brain(const Brain& other);
+    Brain& operator=(const Brain& other);
+    ~Brain();
+
+    void setIdea(int index, const std::string& idea);
+    std::string getIdea(int index) const;
+};
+
+#endif
+
+
+### File: Dog.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Dog.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:47:09 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:13:36 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef DOG_HPP
+#define DOG_HPP
+
+#include "Animal.hpp"
+#include "Brain.hpp"
+
+class Dog : public Animal {
+private:
+    Brain* brain;
+
+public:
+    Dog();
+    Dog(const Dog& other);
+    Dog& operator=(const Dog& other);
+    virtual ~Dog();
+
+    virtual void makeSound() const;
+    Brain* getBrain() const;
+};
+
+#endif
+
+
+### File: WrongCat.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   WrongCat.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:48:12 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:51:05 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef WRONGCAT_HPP
+#define WRONGCAT_HPP
+
+#include "WrongAnimal.hpp"
+
+class WrongCat : public WrongAnimal {
+public:
+    WrongCat();
+    WrongCat(const WrongCat& other);
+    WrongCat& operator=(const WrongCat& other);
+    ~WrongCat();
+
+    void makeSound() const;
+};
+
+#endif
+
+
+### File: Animal.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Animal.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 17:09:43 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:47:20 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef ANIMAL_HPP
+#define ANIMAL_HPP
+
+#include <iostream>
+#include <string>
+
+class Animal {
+protected:
+    std::string type;
+
+public:
+    Animal();
+    Animal(const Animal& other);
+    Animal& operator=(const Animal& other);
+    virtual ~Animal();
+
+    std::string getType() const;
+    virtual void makeSound() const;
+};
+
+#endif
+
+
+### File: WrongAnimal.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   WrongAnimal.hpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/10 23:48:12 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/10 23:48:13 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef WRONGANIMAL_HPP
+#define WRONGANIMAL_HPP
+
+#include <iostream>
+#include <string>
+
+class WrongAnimal {
+protected:
+    std::string type;
+
+public:
+    WrongAnimal();
+    WrongAnimal(const WrongAnimal& other);
+    WrongAnimal& operator=(const WrongAnimal& other);
+    ~WrongAnimal();
+
+    std::string getType() const;
+    void makeSound() const;
+};
+
+#endif
+
+
+### File: Cat.hpp
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Cat.hpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/11 00:12:23 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/04/11 00:12:24 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef CAT_HPP
+#define CAT_HPP
+
+#include "Animal.hpp"
+#include "Brain.hpp"
+
+class Cat : public Animal {
+private:
+    Brain* brain;
+
+public:
+    Cat();
+    Cat(const Cat& other);
+    Cat& operator=(const Cat& other);
+    virtual ~Cat();
+
+    virtual void makeSound() const;
+    Brain* getBrain() const;
+};
+
+#endif
+
+
+

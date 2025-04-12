@@ -11,9 +11,16 @@ This exercise modifies our animal hierarchy to make the base `AAnimal` class abs
 - **Pure virtual function**: Added `makeSound() = 0` to enforce implementation in derived classes
 
 ### 2. Virtual Function System
+
+The primary way to make a class abstract in C++ is by declaring at least one of its member functions as a **pure virtual function**. This is what transformed your `Animal` class into an abstract class.
+
+## Key Mechanism:
+
 ```cpp
+virtual void makeSound() const; // Regular virtual function
 virtual void makeSound() const = 0; // Pure virtual function
 ```
+
 - **Virtual**: Enables runtime polymorphism (dynamic dispatch)
 - **Pure virtual (`= 0`)**: 
   - Makes class abstract
@@ -89,3 +96,117 @@ This exercise demonstrates crucial OOP principles:
 - **Polymorphism**: Uniform interface for different types
 - **Inheritance**: Specializing general concepts
 - **Type Safety**: Preventing invalid object creation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Making a Class Abstract in C++
+
+Yes, the primary way to make a class abstract in C++ is by declaring at least one of its member functions as a **pure virtual function**. This is what transformed your `Animal` class into an abstract class.
+
+## Key Mechanism:
+
+```cpp
+virtual void makeSound() const = 0;  // Pure virtual function
+```
+
+### What This Does:
+1. **Makes the class abstract** (cannot be instantiated)
+2. **Forces derived classes** to implement this method
+3. **Creates an interface** that all concrete animals must implement
+
+## Other Characteristics of Abstract Classes:
+
+1. **Can Have:**
+   - Other virtual methods (with implementations)
+   - Non-virtual methods
+   - Member variables
+   - Constructors and destructors
+
+2. **Cannot:**
+   - Be instantiated directly (`Animal a;` becomes illegal)
+   - Skip implementing pure virtual methods in concrete derived classes
+
+## Your Specific Case:
+
+### Before (Concrete Class):
+```cpp
+class Animal {
+    // ...
+    virtual void makeSound() const;  // Regular virtual function
+};
+```
+
+### After (Abstract Class):
+```cpp
+class Animal {
+    // ...
+    virtual void makeSound() const = 0;  // Pure virtual function
+};
+```
+
+## Important Notes:
+
+1. **Destructors Should Still Be Virtual**:
+   Even in abstract classes, if you plan to delete derived objects through base pointers:
+   ```cpp
+   virtual ~Animal() = default;  // Still important!
+   ```
+
+2. **Can Provide Implementation**:
+   Pure virtual functions can optionally have implementations:
+   ```cpp
+   virtual void makeSound() const = 0;
+   // Later in .cpp file:
+   void Animal::makeSound() const { /* default impl */ }
+   ```
+
+3. **Difference from Interfaces**:
+   - In C++, interfaces are typically implemented as abstract classes with:
+     - All pure virtual methods
+     - No member variables
+   - Your `Animal` is more than an interface since it has `type` member
+
+## Why This Matters in Your Exercise:
+
+1. **Design Improvement**:
+   - Makes it impossible to create generic "Animal" objects (which shouldn't exist)
+   - Enforces that all animals must define how they make sound
+
+2. **Compiler Enforcement**:
+   ```cpp
+   Animal a;  // Now gives compiler error
+   new Animal();  // Also error
+   ```
+
+3. **Still Allows Polymorphism**:
+   ```cpp
+   Animal* a = new Dog();  // Still works
+   a->makeSound();         // Calls Dog's implementation
+   ```
+
+The pure virtual function is the key mechanism that makes the class abstract, while maintaining all other functionality of the hierarchy.

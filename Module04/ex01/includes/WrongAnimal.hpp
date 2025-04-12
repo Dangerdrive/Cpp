@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:48:12 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/10 23:48:13 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:58:03 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ public:
     WrongAnimal();
     WrongAnimal(const WrongAnimal& other);
     WrongAnimal& operator=(const WrongAnimal& other);
-    ~WrongAnimal();
+    ~WrongAnimal();  // Non-virtual destructor!
 
     std::string getType() const;
     void makeSound() const;

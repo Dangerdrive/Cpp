@@ -6,14 +6,28 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/11 00:10:59 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:59:53 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Animal.hpp"
 #include "Dog.hpp"
 #include "Cat.hpp"
+#include "WrongAnimal.hpp"
+#include "WrongCat.hpp"
 #include <iostream>
+
+void run_wrong_animal_tests() {
+    std::cout << "\n----- Wrong Animal Tests with Brain -----" << std::endl;
+    
+    const WrongAnimal* wrongCat = new WrongCat();
+    
+    std::cout << wrongCat->getType() << std::endl;
+   
+    delete wrongCat;  // Only calls WrongAnimal's destructor!
+    
+    std::cout << "--- Check for memory leaks! ---" << std::endl;
+}
 
 int main() {
     // Test basic functionality
@@ -67,6 +81,9 @@ int main() {
         std::cout << "Original's first idea: " << original.getBrain()->getIdea(0) << std::endl;
         std::cout << "Copy's first idea: " << copy.getBrain()->getIdea(0) << std::endl;
     }
+
+    //uncomment line below to show wrong/leaky behaviour
+    //run_wrong_animal_tests();
 
     return 0;
 }

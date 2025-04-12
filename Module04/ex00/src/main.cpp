@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/11 18:29:54 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:41:38 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int main() {
     wrongMeta->makeSound();
 
     delete wrongMeta;
-    delete wrongCat;
+    delete wrongCat; // only calls wrong animal ~
 
     std::cout << "\n----- Additional Tests -----" << std::endl;
     Animal* animals[4];
