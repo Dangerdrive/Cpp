@@ -17,8 +17,8 @@ CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	form
-SRCS	=	./src/main.cpp ./src/Bureaucrat.cpp ./src/AForm.cpp
+NAME	=	moreforms
+SRCS	=	./src/main.cpp ./src/Bureaucrat.cpp ./src/AForm.cpp ./src/ShrubberyCreationForm.cpp ./src/RobotomyRequestForm.cpp ./src/PresidentialPardonForm.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)

@@ -6,66 +6,45 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/11 00:10:59 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/17 21:55:04 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Animal.hpp"
-#include "Dog.hpp"
-#include "Cat.hpp"
+#include "Bureaucrat.hpp"
+#include "Form.hpp"
 #include <iostream>
 
 int main() {
-    // Test basic functionality
-    {
-        std::cout << "----- Basic Test -----" << std::endl;
-        const Animal* j = new Dog();
-        const Animal* i = new Cat();
+    try {
+        // Test valid form creation
+        Form f1("Tax Form", 50, 75);
+        std::cout << f1 << std::endl;
 
-        std::cout << j->getType() << " " << std::endl;
-        std::cout << i->getType() << " " << std::endl;
-
-        i->makeSound();
-        j->makeSound();
-
-        delete j;
-        delete i;
-    }
-
-    // Test array of animals
-    {
-        std::cout << "\n----- Array Test -----" << std::endl;
-        const int numAnimals = 4;
-        Animal* animals[numAnimals];
-
-        for (int i = 0; i < numAnimals/2; i++) {
-            animals[i] = new Dog();
-        }
-        for (int i = numAnimals/2; i < numAnimals; i++) {
-            animals[i] = new Cat();
+        // Test invalid form creation
+        try {
+            Form f2("Invalid Form", 0, 151);
+        } catch (std::exception& e) {
+            std::cerr << "Error creating form: " << e.what() << std::endl;
         }
 
-        for (int i = 0; i < numAnimals; i++) {
-            animals[i]->makeSound();
-            delete animals[i];
-        }
-    }
+        // Test signing forms
+        Bureaucrat b1("Alice", 30);
+        Bureaucrat b2("Bob", 60);
 
-    // Test deep copy
-    {
-        std::cout << "\n----- Deep Copy Test -----" << std::endl;
-        Dog original;
-        original.getBrain()->setIdea(0, "I want to play!");
+        // Alice can sign (grade 30 <= 50)
+        b1.signForm(f1);
+        std::cout << f1 << std::endl;
 
-        Dog copy(original);
-        std::cout << "Original's first idea: " << original.getBrain()->getIdea(0) << std::endl;
-        std::cout << "Copy's first idea: " << copy.getBrain()->getIdea(0) << std::endl;
+        // Bob cannot sign (grade 60 > 50)
+        b2.signForm(f1);
 
-        // Modify the copy's brain
-        copy.getBrain()->setIdea(0, "I want to sleep!");
-        std::cout << "After modification:" << std::endl;
-        std::cout << "Original's first idea: " << original.getBrain()->getIdea(0) << std::endl;
-        std::cout << "Copy's first idea: " << copy.getBrain()->getIdea(0) << std::endl;
+        // Test already signed form
+        Form f3("Application", 40, 50);
+        b1.signForm(f3);
+        b2.signForm(f3); // Bob can't sign but message shows it's already signed
+
+    } catch (std::exception& e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
     }
 
     return 0;
