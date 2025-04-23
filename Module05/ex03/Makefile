@@ -5,7 +5,7 @@
 # Special variables
 DEFAULT_GOAL: all
 .DELETE_ON_ERROR: $(NAME)
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus clean fclean re cleanall
 
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
@@ -34,6 +34,9 @@ LIMITER =	"\033[0m"
 #------------------------------------------------------------------------------#
 
 all: $(BIN_DIR) $(NAME)
+	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
+	@echo 
+	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
 
 # Generates output file
 $(NAME): $(OBJS)
@@ -43,7 +46,7 @@ $(NAME): $(OBJS)
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
 	@echo $(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)
 	@$(CC) $(CFLAGS) -c $< -o $@
-
+	
 # Create bin directory
 $(BIN_DIR):
 	@echo $(GREEN)[Creating $(BIN_DIR)]$(LIMITER)
@@ -62,3 +65,9 @@ fclean: clean
 
 # Removes objects and executables and remakes
 re: fclean all
+
+cleanall: 
+	@cd ../ex00 && make fclean
+	@cd ../ex01 && make fclean
+	@cd ../ex02 && make fclean
+	@cd ../ex03 && make fclean

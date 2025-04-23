@@ -1,0 +1,199 @@
+#Exercise Subject
+
+Let’s design an artificial nightmare of offices, corridors, forms, and waiting queues.
+Sounds fun? No? Too bad.
+First, start by the smallest cog in this vast bureaucratic machine: the Bureaucrat.
+A Bureaucrat must have:
+• A constant name.
+• And a grade that ranges from 1 (highest possible grade) to 150 (lowest possible
+grade).
+Any attempt to instantiate a Bureaucrat using an invalid grade must throw an ex-
+ception:
+either a Bureaucrat::GradeTooHighException or a Bureaucrat::GradeTooLowException.
+You will provide getters for both these attributes: getName() and getGrade(). Im-
+plement also two member functions to increment or decrement the bureaucrat grade. If
+the grade is out of range, both of them will throw the same exceptions as the constructor.
+Remember. Since grade 1 is the highest one and 150 the lowest,
+incrementing a grade 3 should give a grade 2 to the bureaucrat.
+The thrown exceptions must be catchable using try and catch blocks:
+try
+{
+/* do some stuff with bureaucrats */
+}
+catch (std::exception & e)
+{
+/* handle exception */
+}
+You will implement an overload of the insertion («) operator to print something like
+(without the angle brackets):
+<name>, bureaucrat grade <grade>.
+As usual, turn in some tests to prove everything works as expected.
+
+
+### File: main.cpp
+
+#include "Bureaucrat.hpp"
+#include <iostream>
+
+int main() {
+    try {
+        // Test valid grade
+        Bureaucrat b1("Alice", 2);
+        std::cout << b1 << std::endl;
+
+        // Test increment
+        b1.incrementGrade();
+        std::cout << "After increment: " << b1 << std::endl;
+
+        // Test decrement
+        b1.decrementGrade();
+        std::cout << "After decrement: " << b1 << std::endl;
+
+        // Test too high grade
+        try {
+            Bureaucrat b2("Bob", 0);
+        } catch (std::exception& e) {
+            std::cerr << "Error creating Bob: " << e.what() << std::endl;
+        }
+
+        // Test too low grade
+        try {
+            Bureaucrat b3("Charlie", 151);
+        } catch (std::exception& e) {
+            std::cerr << "Error creating Charlie: " << e.what() << std::endl;
+        }
+
+        // Test increment too high
+        try {
+            Bureaucrat b4("Dave", 1);
+            b4.incrementGrade();
+        } catch (std::exception& e) {
+            std::cerr << "Error incrementing Dave: " << e.what() << std::endl;
+        }
+
+        // Test decrement too low
+        try {
+            Bureaucrat b5("Eve", 150);
+            b5.decrementGrade();
+        } catch (std::exception& e) {
+            std::cerr << "Error decrementing Eve: " << e.what() << std::endl;
+        }
+
+    } catch (std::exception& e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    }
+
+    return 0;
+}
+
+
+
+### File: Bureaucrat.cpp
+
+#include "Bureaucrat.hpp"
+
+Bureaucrat::Bureaucrat() : _name(""), _grade(150) {}
+
+Bureaucrat::Bureaucrat(const std::string& name, int grade) : _name(name) {
+    if (grade < 1)
+        throw GradeTooHighException();
+    if (grade > 150)
+        throw GradeTooLowException();
+    _grade = grade;
+}
+
+Bureaucrat::Bureaucrat(const Bureaucrat& other) : _name(other._name), _grade(other._grade) {}
+
+Bureaucrat& Bureaucrat::operator=(const Bureaucrat& other) {
+    if (this != &other) {
+        _grade = other._grade;
+    }
+    return *this;
+}
+
+Bureaucrat::~Bureaucrat() {}
+
+const std::string& Bureaucrat::getName() const {
+    return _name;
+}
+
+int Bureaucrat::getGrade() const {
+    return _grade;
+}
+
+void Bureaucrat::incrementGrade() {
+    if (_grade - 1 < 1)
+        throw GradeTooHighException();
+    _grade--;
+}
+
+void Bureaucrat::decrementGrade() {
+    if (_grade + 1 > 150)
+        throw GradeTooLowException();
+    _grade++;
+}
+
+const char* Bureaucrat::GradeTooHighException::what() const throw() {
+    return "Grade is too high (maximum is 1)";
+}
+
+const char* Bureaucrat::GradeTooLowException::what() const throw() {
+    return "Grade is too low (minimum is 150)";
+}
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat) {
+    os << bureaucrat.getName() << ", bureaucrat grade " << bureaucrat.getGrade() << ".";
+    return os;
+}
+
+
+
+### File: Bureaucrat.hpp
+
+#ifndef BUREAUCRAT_HPP
+#define BUREAUCRAT_HPP
+
+#include <iostream>
+#include <string>
+#include <exception>
+
+class Bureaucrat {
+private:
+    const std::string _name;
+    int _grade;
+
+    Bureaucrat();
+
+public:
+    // Orthodox Canonical Form
+    Bureaucrat(const std::string& name, int grade);
+    Bureaucrat(const Bureaucrat& other);
+    Bureaucrat& operator=(const Bureaucrat& other);
+    ~Bureaucrat();
+
+    // Getters
+    const std::string& getName() const;
+    int getGrade() const;
+
+    // Member functions
+    void incrementGrade();
+    void decrementGrade();
+
+    // Exceptions
+    class GradeTooHighException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class GradeTooLowException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+};
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat);
+
+#endif
+
+
+
