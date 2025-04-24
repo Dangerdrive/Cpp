@@ -1,0 +1,511 @@
+Files to turn in : Makefile, main.cpp, Bureaucrat.[{h, hpp},cpp],
+Bureaucrat.cpp +
+AForm.[{h, hpp},cpp], ShrubberyCreationForm.[{h, hpp},cpp], +
+RobotomyRequestForm.[{h, hpp},cpp], PresidentialPardonForm.[{h, hpp},cpp]
+
+Since you now have basic forms, it’s time to make a few more that actually do some-
+thing.
+In all cases, the base class Form must be an abstract class, and therefore should be
+renamed AForm. Keep in mind the form’s attributes need to remain private and that
+they are in the base class.
+Add the following concrete classes:
+• ShrubberyCreationForm: Required grades: sign 145, exec 137
+Create a file <target>_shrubbery in the working directory, and writes ASCII trees
+inside it.
+• RobotomyRequestForm: Required grades: sign 72, exec 45
+Makes some drilling noises. Then, informs that <target> has been robotomized
+successfully 50% of the time. Otherwise, informs that the robotomy failed.
+• PresidentialPardonForm: Required grades: sign 25, exec 5
+Informs that <target> has been pardoned by Zaphod Beeblebrox.
+All of them take only one parameter in their constructor: the target of the form. For
+example, "home" if you want to plant shrubbery at home.
+Now, add the execute(Bureaucrat const & executor) const member function to
+the base form and implement a function to execute the form’s action of the concrete
+classes. You have to check that the form is signed and that the grade of the bureaucrat
+attempting to execute the form is high enough. Otherwise, throw an appropriate excep-
+tion.
+Whether you want to check the requirements in every concrete class or in the base
+class (then call another function to execute the form) is up to you. However, one way is
+prettier than the other one.
+Lastly, add the executeForm(AForm const & form) member function to the Bureau-
+crat. It must attempt to execute the form. If it’s successful, print something like:
+<bureaucrat> executed <form>
+If not, print an explicit error message.
+Implement and turn in some tests to ensure everything works as expected.
+
+### File: main.cpp
+
+#include "Bureaucrat.hpp"
+#include "ShrubberyCreationForm.hpp"
+#include "RobotomyRequestForm.hpp"
+#include "PresidentialPardonForm.hpp"
+#include <iostream>
+
+int main() {
+    try {
+        Bureaucrat highRank("Zaphod", 1);
+        Bureaucrat midRank("Arthur", 50);
+        Bureaucrat lowRank("Ford", 150);
+
+        // ShrubberyCreationForm tests
+        ShrubberyCreationForm shrubbery("home");
+        std::cout << shrubbery << std::endl;
+
+        lowRank.signForm(shrubbery);  // Should succeed (145 needed)
+        lowRank.executeForm(shrubbery); // Should fail (137 needed)
+
+        midRank.executeForm(shrubbery); // Should succeed
+
+        // RobotomyRequestForm tests
+        RobotomyRequestForm robotomy("Marvin");
+        std::cout << robotomy << std::endl;
+
+        midRank.signForm(robotomy); // Should succeed (72 needed)
+        midRank.executeForm(robotomy); // Should fail (45 needed)
+
+        highRank.executeForm(robotomy); // Should succeed (50% chance)
+
+        // PresidentialPardonForm tests
+        PresidentialPardonForm pardon("Trillian");
+        std::cout << pardon << std::endl;
+
+        midRank.signForm(pardon); // Should fail (25 needed)
+        highRank.signForm(pardon); // Should succeed
+        highRank.executeForm(pardon); // Should succeed
+
+        // Try to execute unsigned form
+        PresidentialPardonForm pardon2("Slartibartfast");
+        highRank.executeForm(pardon2); // Should fail (not signed)
+
+    } catch (std::exception& e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    }
+
+    return 0;
+}
+
+
+### File: PresidentialPardonForm.cpp
+
+#include "PresidentialPardonForm.hpp"
+
+PresidentialPardonForm::PresidentialPardonForm() :
+    AForm("PresidentialPardonForm", 25, 5), _target("") {}
+
+PresidentialPardonForm::PresidentialPardonForm(const std::string& target) :
+    AForm("PresidentialPardonForm", 25, 5), _target(target) {}
+
+PresidentialPardonForm::PresidentialPardonForm(const PresidentialPardonForm& other) :
+    AForm(other), _target(other._target) {}
+
+PresidentialPardonForm& PresidentialPardonForm::operator=(const PresidentialPardonForm& other) {
+    if (this != &other) {
+        AForm::operator=(other);
+        _target = other._target;
+    }
+    return *this;
+}
+
+PresidentialPardonForm::~PresidentialPardonForm() {}
+
+void PresidentialPardonForm::execute(const Bureaucrat& executor) const {
+    if (!getIsSigned())
+        throw FormNotSignedException();
+    if (executor.getGrade() > getGradeToExecute())
+        throw GradeTooLowException();
+
+    std::cout << _target << " has been pardoned by Zaphod Beeblebrox.\n";
+}
+
+
+### File: AForm.cpp
+
+#include "AForm.hpp"
+
+AForm::AForm() : _name(""), _isSigned(false), _gradeToSign(150), _gradeToExecute(150) {}
+
+AForm::AForm(const std::string& name, int gradeToSign, int gradeToExecute) :
+    _name(name), _isSigned(false), _gradeToSign(gradeToSign), _gradeToExecute(gradeToExecute) {
+    if (gradeToSign < 1 || gradeToExecute < 1)
+        throw GradeTooHighException();
+    if (gradeToSign > 150 || gradeToExecute > 150)
+        throw GradeTooLowException();
+}
+
+AForm::AForm(const AForm& other) :
+    _name(other._name), _isSigned(other._isSigned),
+    _gradeToSign(other._gradeToSign), _gradeToExecute(other._gradeToExecute) {}
+
+AForm& AForm::operator=(const AForm& other) {
+    if (this != &other) {
+        _isSigned = other._isSigned;
+    }
+    return *this;
+}
+
+AForm::~AForm() {}
+
+const std::string& AForm::getName() const { return _name; }
+bool AForm::getIsSigned() const { return _isSigned; }
+int AForm::getGradeToSign() const { return _gradeToSign; }
+int AForm::getGradeToExecute() const { return _gradeToExecute; }
+
+void AForm::beSigned(const Bureaucrat& bureaucrat) {
+    if (bureaucrat.getGrade() > _gradeToSign)
+        throw GradeTooLowException();
+    _isSigned = true;
+}
+
+const char* AForm::GradeTooHighException::what() const throw() {
+    return "Form grade is too high (maximum is 1)";
+}
+
+const char* AForm::GradeTooLowException::what() const throw() {
+    return "Form grade is too low (minimum is 150)";
+}
+
+const char* AForm::FormNotSignedException::what() const throw() {
+    return "Form is not signed";
+}
+
+std::ostream& operator<<(std::ostream& os, const AForm& form) {
+    os << "Form " << form.getName()
+       << ", status: " << (form.getIsSigned() ? "signed" : "unsigned")
+       << ", grade required to sign: " << form.getGradeToSign()
+       << ", grade required to execute: " << form.getGradeToExecute();
+    return os;
+}
+
+
+### File: RobotomyRequestForm.cpp
+
+#include "RobotomyRequestForm.hpp"
+
+RobotomyRequestForm::RobotomyRequestForm() : AForm("RobotomyRequestForm", 72, 45), _target("") {}
+
+RobotomyRequestForm::RobotomyRequestForm(const std::string& target) :
+    AForm("RobotomyRequestForm", 72, 45), _target(target) {}
+
+RobotomyRequestForm::RobotomyRequestForm(const RobotomyRequestForm& other) :
+    AForm(other), _target(other._target) {}
+
+RobotomyRequestForm& RobotomyRequestForm::operator=(const RobotomyRequestForm& other) {
+    if (this != &other) {
+        AForm::operator=(other);
+        _target = other._target;
+    }
+    return *this;
+}
+
+RobotomyRequestForm::~RobotomyRequestForm() {}
+
+void RobotomyRequestForm::execute(const Bureaucrat& executor) const {
+    if (!getIsSigned())
+        throw FormNotSignedException();
+    if (executor.getGrade() > getGradeToExecute())
+        throw GradeTooLowException();
+
+    std::cout << "Drilling noises... Bzzzzzzzt!\n";
+    std::srand(std::time(0));
+    if (std::rand() % 2) {
+        std::cout << _target << " has been robotomized successfully!\n";
+    } else {
+        std::cout << "Robotomy on " << _target << " failed.\n";
+    }
+}
+
+
+### File: Bureaucrat.cpp
+
+#include "Bureaucrat.hpp"
+
+Bureaucrat::Bureaucrat() : _name(""), _grade(150) {}
+
+Bureaucrat::Bureaucrat(const std::string& name, int grade) : _name(name) {
+    if (grade < 1)
+        throw GradeTooHighException();
+    if (grade > 150)
+        throw GradeTooLowException();
+    _grade = grade;
+}
+
+Bureaucrat::Bureaucrat(const Bureaucrat& other) : _name(other._name), _grade(other._grade) {}
+
+Bureaucrat& Bureaucrat::operator=(const Bureaucrat& other) {
+    if (this != &other) {
+        _grade = other._grade;
+    }
+    return *this;
+}
+
+Bureaucrat::~Bureaucrat() {}
+
+const std::string& Bureaucrat::getName() const {
+    return _name;
+}
+
+int Bureaucrat::getGrade() const {
+    return _grade;
+}
+
+void Bureaucrat::incrementGrade() {
+    if (_grade - 1 < 1)
+        throw GradeTooHighException();
+    _grade--;
+}
+
+void Bureaucrat::decrementGrade() {
+    if (_grade + 1 > 150)
+        throw GradeTooLowException();
+    _grade++;
+}
+
+const char* Bureaucrat::GradeTooHighException::what() const throw() {
+    return "Grade is too high (maximum is 1)";
+}
+
+const char* Bureaucrat::GradeTooLowException::what() const throw() {
+    return "Grade is too low (minimum is 150)";
+}
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat) {
+    os << bureaucrat.getName() << ", bureaucrat grade " << bureaucrat.getGrade() << ".";
+    return os;
+}
+
+void Bureaucrat::executeForm(const AForm& form) {
+    try {
+        form.execute(*this);
+        std::cout << _name << " executed " << form.getName() << std::endl;
+    } catch (std::exception& e) {
+        std::cout << _name << " couldn't execute " << form.getName()
+                  << " because " << e.what() << std::endl;
+    }
+}
+
+
+### File: ShrubberyCreationForm.cpp
+
+#include "ShrubberyCreationForm.hpp"
+
+ShrubberyCreationForm::ShrubberyCreationForm() : AForm("ShrubberyCreationForm", 145, 137), _target("") {}
+
+ShrubberyCreationForm::ShrubberyCreationForm(const std::string& target) :
+    AForm("ShrubberyCreationForm", 145, 137), _target(target) {}
+
+ShrubberyCreationForm::ShrubberyCreationForm(const ShrubberyCreationForm& other) :
+    AForm(other), _target(other._target) {}
+
+ShrubberyCreationForm& ShrubberyCreationForm::operator=(const ShrubberyCreationForm& other) {
+    if (this != &other) {
+        AForm::operator=(other);
+        _target = other._target;
+    }
+    return *this;
+}
+
+ShrubberyCreationForm::~ShrubberyCreationForm() {}
+
+void ShrubberyCreationForm::execute(const Bureaucrat& executor) const {
+    if (!getIsSigned())
+        throw FormNotSignedException();
+    if (executor.getGrade() > getGradeToExecute())
+        throw GradeTooLowException();
+
+    std::ofstream out((_target + "_shrubbery").c_str());
+    out << "       _-_\n"
+        << "    /~~   ~~\\\n"
+        << " /~~         ~~\\\n"
+        << "{               }\n"
+        << " \\  _-     -_  /\n"
+        << "   ~  \\\\ //  ~\n"
+        << "_- -   | | _- _\n"
+        << "  _ -  | |   -_\n"
+        << "      // \\\\\n";
+    out.close();
+}
+
+
+### File: RobotomyRequestForm.hpp
+
+#ifndef ROBOTOMYREQUESTFORM_HPP
+#define ROBOTOMYREQUESTFORM_HPP
+
+#include "AForm.hpp"
+#include <cstdlib>
+#include <ctime>
+
+class RobotomyRequestForm : public AForm {
+private:
+    std::string _target;
+    RobotomyRequestForm();
+
+public:
+    RobotomyRequestForm(const std::string& target);
+    RobotomyRequestForm(const RobotomyRequestForm& other);
+    RobotomyRequestForm& operator=(const RobotomyRequestForm& other);
+    ~RobotomyRequestForm();
+
+    void execute(const Bureaucrat& executor) const;
+};
+
+#endif
+
+
+### File: Bureaucrat.hpp
+
+#ifndef BUREAUCRAT_HPP
+#define BUREAUCRAT_HPP
+
+#include <iostream>
+#include <string>
+#include <exception>
+
+class AForm;
+
+class Bureaucrat {
+private:
+    const std::string _name;
+    int _grade;
+
+    Bureaucrat();
+
+public:
+    // Orthodox Canonical Form
+    Bureaucrat(const std::string& name, int grade);
+    Bureaucrat(const Bureaucrat& other);
+    Bureaucrat& operator=(const Bureaucrat& other);
+    ~Bureaucrat();
+
+    // Getters
+    const std::string& getName() const;
+    int getGrade() const;
+
+    // Member functions
+    void incrementGrade();
+    void decrementGrade();
+    void executeForm(const AForm& form);
+
+    // Exceptions
+    class GradeTooHighException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class GradeTooLowException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+};
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat);
+
+#endif
+
+
+### File: ShrubberyCreationForm.hpp
+
+#ifndef SHRUBBERYCREATIONFORM_HPP
+#define SHRUBBERYCREATIONFORM_HPP
+
+#include "AForm.hpp"
+#include <fstream>
+
+class ShrubberyCreationForm : public AForm {
+private:
+    std::string _target;
+    ShrubberyCreationForm();
+
+public:
+    ShrubberyCreationForm(const std::string& target);
+    ShrubberyCreationForm(const ShrubberyCreationForm& other);
+    ShrubberyCreationForm& operator=(const ShrubberyCreationForm& other);
+    ~ShrubberyCreationForm();
+
+    void execute(const Bureaucrat& executor) const;
+};
+
+#endif
+
+
+### File: PresidentialPardonForm.hpp
+
+#ifndef PRESIDENTIALPARDONFORM_HPP
+#define PRESIDENTIALPARDONFORM_HPP
+
+#include "AForm.hpp"
+
+class PresidentialPardonForm : public AForm {
+private:
+    std::string _target;
+    PresidentialPardonForm();
+
+public:
+    PresidentialPardonForm(const std::string& target);
+    PresidentialPardonForm(const PresidentialPardonForm& other);
+    PresidentialPardonForm& operator=(const PresidentialPardonForm& other);
+    ~PresidentialPardonForm();
+
+    void execute(const Bureaucrat& executor) const;
+};
+
+#endif
+
+
+### File: AForm.hpp
+
+#ifndef AFORM_HPP
+#define AFORM_HPP
+
+#include <iostream>
+#include <string>
+#include <exception>
+#include "Bureaucrat.hpp"
+
+class Bureaucrat;
+
+class AForm {
+private:
+    const std::string _name;
+    bool _isSigned;
+    const int _gradeToSign;
+    const int _gradeToExecute;
+
+    AForm();
+
+public:
+    AForm(const std::string& name, int gradeToSign, int gradeToExecute);
+    AForm(const AForm& other);
+    AForm& operator=(const AForm& other);
+    virtual ~AForm();
+
+    const std::string& getName() const;
+    bool getIsSigned() const;
+    int getGradeToSign() const;
+    int getGradeToExecute() const;
+
+    void beSigned(const Bureaucrat& bureaucrat);
+    virtual void execute(const Bureaucrat& executor) const = 0;
+
+    class GradeTooHighException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class GradeTooLowException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class FormNotSignedException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+};
+
+std::ostream& operator<<(std::ostream& os, const AForm& form);
+
+#endif
+
+
+

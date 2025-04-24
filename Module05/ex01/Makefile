@@ -18,7 +18,7 @@ RM		=	rm -rf
 
 # Dir and file names
 NAME	=	form
-SRCS	=	./src/main.cpp ./src/Bureaucrat.cpp ./src/AForm.cpp
+SRCS	=	./src/main.cpp ./src/Bureaucrat.cpp ./src/Form.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)

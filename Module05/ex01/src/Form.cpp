@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:52:55 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/17 21:46:07 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:05:31 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ int Form::getGradeToExecute() const {
 }
 
 void Form::beSigned(const Bureaucrat& bureaucrat) {
-    if (bureaucrat.getGrade() > _gradeToSign)
+    if (getIsSigned() == true)
+        throw AlreadySignedException();
+    else if (bureaucrat.getGrade() > _gradeToSign)
         throw GradeTooLowException();
     _isSigned = true;
 }
@@ -63,6 +65,10 @@ const char* Form::GradeTooHighException::what() const throw() {
 
 const char* Form::GradeTooLowException::what() const throw() {
     return "Form grade is too low (minimum is 150)";
+}
+
+const char* Form::AlreadySignedException::what() const throw() {
+    return "Form was already signed";
 }
 
 std::ostream& operator<<(std::ostream& os, const Form& form) {

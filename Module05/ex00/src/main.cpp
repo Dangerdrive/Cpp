@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/17 18:43:35 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/23 17:27:48 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main() {
         try {
             Bureaucrat b2("Bob", 0);
         } catch (std::exception& e) {
-            std::cerr << "Error creating Bob: " << e.what() << std::endl;
+            std::cerr << "\nError creating Bob: " << e.what() << std::endl;
         }
 
         // Test too low grade
@@ -44,6 +44,7 @@ int main() {
         // Test increment too high
         try {
             Bureaucrat b4("Dave", 1);
+            std::cout << b4 << std::endl;
             b4.incrementGrade();
         } catch (std::exception& e) {
             std::cerr << "Error incrementing Dave: " << e.what() << std::endl;
@@ -52,6 +53,7 @@ int main() {
         // Test decrement too low
         try {
             Bureaucrat b5("Eve", 150);
+            std::cout << b5 << std::endl;
             b5.decrementGrade();
         } catch (std::exception& e) {
             std::cerr << "Error decrementing Eve: " << e.what() << std::endl;
@@ -60,6 +62,9 @@ int main() {
     } catch (std::exception& e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;
     }
+
+    // Bureaucrat b4("Dave", 1);
+    // b4.incrementGrade();
 
     return 0;
 }

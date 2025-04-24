@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:42:29 by marvin            #+#    #+#             */
-/*   Updated: 2025/04/17 21:45:37 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/23 18:01:54 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,12 @@ public:
     public:
         virtual const char* what() const throw();
     };
+
+    class AlreadySignedException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+    
 };
 
 std::ostream& operator<<(std::ostream& os, const Form& form);

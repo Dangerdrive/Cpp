@@ -1,0 +1,312 @@
+#Exercise Subject
+Files to turn in : Files from previous exercise + Form.{h, hpp}, Form.cpp
+Now that you have bureaucrats, let’s give them something to do. What better activity
+could there be than the one of filling out a stack of forms?
+Then, let’s make a Form class. It has:
+• A constant name.
+• A boolean indicating whether it is signed (at construction, it’s not).
+• A constant grade required to sign it.
+• And a constant grade required to execute it.
+All these attributes are private, not protected.
+The grades of the Form follow the same rules that apply to the Bureaucrat. Thus,
+the following exceptions will be thrown if a form grade is out of bounds:
+Form::GradeTooHighException and Form::GradeTooLowException.
+Same as before, write getters for all attributes and an overload of the insertion («)
+operator that prints all the form’s informations.
+Add also a beSigned() member function to the Form that takes a Bureaucrat as
+parameter. It changes the form status to signed if the bureaucrat’s grade is high enough
+(higher or egal to the required one). Remember, grade 1 is higher than grade 2.
+If the grade is too low, throw a Form::GradeTooLowException.
+Lastly, add a signForm() member function to the Bureaucrat. If the form got signed,
+it will print something like:
+<bureaucrat> signed <form>
+Otherwise, it will print something like:
+<bureaucrat> couldn’t sign <form> because <reason>.
+Implement and turn in some tests to ensure everything works as expected.
+
+
+### File: main.cpp
+
+#include "Bureaucrat.hpp"
+#include "Form.hpp"
+#include <iostream>
+
+int main() {
+    try {
+        std::cout << "Test create valid form" << std::endl;
+        Form f1("Tax Form", 50, 75);
+        std::cout << f1 << std::endl;
+
+        std::cout << "\nTest invalid form creation" << std::endl;
+        try {
+            Form f2("Invalid Form", 0, 151);
+        } catch (std::exception& e) {
+            std::cerr << "Error creating form: " << e.what() << std::endl;
+        }
+
+        std::cout << "\nTests signing forms" << std::endl;
+        Bureaucrat b1("Alice", 30);
+        Bureaucrat b2("Bob", 60);
+
+        std::cout << "\nTest - Alice can sign (grade 30 <= 50)" << std::endl;
+        b1.signForm(f1);
+        std::cout << f1 << std::endl;
+
+        std::cout << "\nTest - Bob cannot sign (grade 60 > 50)" << std::endl;
+        b2.signForm(f1);
+
+        std::cout << "\nTest already signed form" << std::endl;
+        Form f3("Application", 40, 50);
+        b1.signForm(f3);
+        b2.signForm(f3); // Bob can't sign but message shows it's already signed
+
+    } catch (std::exception& e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+    }
+
+    return 0;
+}
+
+
+### File: Bureaucrat.cpp
+
+#include "Bureaucrat.hpp"
+
+Bureaucrat::Bureaucrat() : _name(""), _grade(150) {}
+
+Bureaucrat::Bureaucrat(const std::string& name, int grade) : _name(name) {
+    if (grade < 1)
+        throw GradeTooHighException();
+    if (grade > 150)
+        throw GradeTooLowException();
+    _grade = grade;
+}
+
+Bureaucrat::Bureaucrat(const Bureaucrat& other) : _name(other._name), _grade(other._grade) {}
+
+Bureaucrat& Bureaucrat::operator=(const Bureaucrat& other) {
+    if (this != &other) {
+        _grade = other._grade;
+    }
+    return *this;
+}
+
+Bureaucrat::~Bureaucrat() {}
+
+const std::string& Bureaucrat::getName() const {
+    return _name;
+}
+
+int Bureaucrat::getGrade() const {
+    return _grade;
+}
+
+void Bureaucrat::incrementGrade() {
+    if (_grade - 1 < 1)
+        throw GradeTooHighException();
+    _grade--;
+}
+
+void Bureaucrat::decrementGrade() {
+    if (_grade + 1 > 150)
+        throw GradeTooLowException();
+    _grade++;
+}
+
+const char* Bureaucrat::GradeTooHighException::what() const throw() {
+    return "Grade is too high (maximum is 1)";
+}
+
+const char* Bureaucrat::GradeTooLowException::what() const throw() {
+    return "Grade is too low (minimum is 150)";
+}
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat) {
+    os << bureaucrat.getName() << ", bureaucrat grade " << bureaucrat.getGrade() << ".";
+    return os;
+}
+
+void Bureaucrat::signForm(Form& form) {
+    try {
+        form.beSigned(*this);
+        std::cout << _name << " signed " << form.getName() << std::endl;
+    } catch (std::exception& e) {
+        std::cout << _name << " couldn't sign " << form.getName()
+                  << " because " << e.what() << std::endl;
+    }
+}
+
+
+### File: Form.cpp
+
+#include "Form.hpp"
+
+Form::Form() : _name(""), _isSigned(false), _gradeToSign(150), _gradeToExecute(150) {}
+
+Form::Form(const std::string& name, int gradeToSign, int gradeToExecute) :
+    _name(name), _isSigned(false), _gradeToSign(gradeToSign), _gradeToExecute(gradeToExecute) {
+    if (gradeToSign < 1 || gradeToExecute < 1)
+        throw GradeTooHighException();
+    if (gradeToSign > 150 || gradeToExecute > 150)
+        throw GradeTooLowException();
+}
+
+Form::Form(const Form& other) :
+    _name(other._name), _isSigned(other._isSigned),
+    _gradeToSign(other._gradeToSign), _gradeToExecute(other._gradeToExecute) {}
+
+Form& Form::operator=(const Form& other) {
+    if (this != &other) {
+        _isSigned = other._isSigned;
+    }
+    return *this;
+}
+
+Form::~Form() {}
+
+const std::string& Form::getName() const {
+    return _name;
+}
+
+bool Form::getIsSigned() const {
+    return _isSigned;
+}
+
+int Form::getGradeToSign() const {
+    return _gradeToSign;
+}
+
+int Form::getGradeToExecute() const {
+    return _gradeToExecute;
+}
+
+void Form::beSigned(const Bureaucrat& bureaucrat) {
+    if (bureaucrat.getGrade() > _gradeToSign)
+        throw GradeTooLowException();
+    _isSigned = true;
+}
+
+const char* Form::GradeTooHighException::what() const throw() {
+    return "Form grade is too high (maximum is 1)";
+}
+
+const char* Form::GradeTooLowException::what() const throw() {
+    return "Form grade is too low (minimum is 150)";
+}
+
+std::ostream& operator<<(std::ostream& os, const Form& form) {
+    os << "Form " << form.getName()
+       << ", status: " << (form.getIsSigned() ? "signed" : "unsigned")
+       << ", grade required to sign: " << form.getGradeToSign()
+       << ", grade required to execute: " << form.getGradeToExecute();
+    return os;
+}
+
+
+### File: Form.hpp
+
+#ifndef FORM_HPP
+#define FORM_HPP
+
+#include <iostream>
+#include <string>
+#include <exception>
+#include "Bureaucrat.hpp"
+
+class Bureaucrat;
+
+class Form {
+private:
+    const std::string _name;
+    bool _isSigned;
+    const int _gradeToSign;
+    const int _gradeToExecute;
+
+    Form();
+
+public:
+    // Orthodox Canonical Form
+    Form(const std::string& name, int gradeToSign, int gradeToExecute);
+    Form(const Form& other);
+    Form& operator=(const Form& other);
+    ~Form();
+
+    // Getters
+    const std::string& getName() const;
+    bool getIsSigned() const;
+    int getGradeToSign() const;
+    int getGradeToExecute() const;
+
+    // Member functions
+    void beSigned(const Bureaucrat& bureaucrat);
+
+    // Exceptions
+    class GradeTooHighException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class GradeTooLowException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+};
+
+std::ostream& operator<<(std::ostream& os, const Form& form);
+
+#endif
+
+
+### File: Bureaucrat.hpp
+
+#ifndef BUREAUCRAT_HPP
+#define BUREAUCRAT_HPP
+
+#include <iostream>
+#include <string>
+#include <exception>
+#include "Form.hpp"
+
+class Form;
+
+class Bureaucrat {
+private:
+    const std::string _name;
+    int _grade;
+
+    Bureaucrat();
+
+public:
+    // Orthodox Canonical Form
+    Bureaucrat(const std::string& name, int grade);
+    Bureaucrat(const Bureaucrat& other);
+    Bureaucrat& operator=(const Bureaucrat& other);
+    ~Bureaucrat();
+
+    // Getters
+    const std::string& getName() const;
+    int getGrade() const;
+
+    // Member functions
+    void incrementGrade();
+    void decrementGrade();
+    void signForm(Form& form);
+
+    // Exceptions
+    class GradeTooHighException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+
+    class GradeTooLowException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+};
+
+std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat);
+
+#endif
+
+
+
