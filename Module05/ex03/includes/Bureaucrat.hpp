@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:42:29 by marvin            #+#    #+#             */
-/*   Updated: 2025/04/17 22:02:38 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/24 17:11:18 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <iostream>
 #include <string>
 #include <exception>
+
+class AForm;
 
 class Bureaucrat {
 private:
@@ -38,6 +40,7 @@ public:
     // Member functions
     void incrementGrade();
     void decrementGrade();
+    void signForm(AForm& form);
     void executeForm(const AForm& form);
 
     // Exceptions

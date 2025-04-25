@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Bureaucrat Program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/ex02/bureaucrat",  // Or your executable name
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make",
+            "miDebuggerPath": "/usr/bin/gdb"  // Path to your gdb
+        }
+    ]
+}

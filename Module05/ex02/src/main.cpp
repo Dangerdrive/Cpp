@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:09:36 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/17 21:57:53 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/24 21:05:05 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,39 +18,43 @@
 
 int main() {
     try {
+        std::cout << "=====Creating valid bureaucrat=====" << std::endl;
         Bureaucrat highRank("Zaphod", 1);
         Bureaucrat midRank("Arthur", 50);
         Bureaucrat lowRank("Ford", 150);
 
-        // ShrubberyCreationForm tests
+
+        std::cout << "\n=====ShrubberyCreationForm tests=====" << std::endl;
         ShrubberyCreationForm shrubbery("home");
         std::cout << shrubbery << std::endl;
 
-        lowRank.signForm(shrubbery);  // Should succeed (145 needed)
-        lowRank.executeForm(shrubbery); // Should fail (137 needed)
+        lowRank.signForm(shrubbery);  
+        lowRank.executeForm(shrubbery);
 
-        midRank.executeForm(shrubbery); // Should succeed
+        midRank.signForm(shrubbery);
+        midRank.executeForm(shrubbery);
 
-        // RobotomyRequestForm tests
+
+        std::cout << "\n=====RobotomyRequestForm tests=====" << std::endl;
         RobotomyRequestForm robotomy("Marvin");
         std::cout << robotomy << std::endl;
 
-        midRank.signForm(robotomy); // Should succeed (72 needed)
-        midRank.executeForm(robotomy); // Should fail (45 needed)
+        midRank.signForm(robotomy);
+        midRank.executeForm(robotomy);
 
         highRank.executeForm(robotomy); // Should succeed (50% chance)
 
-        // PresidentialPardonForm tests
+        std::cout << "\n=====PresidentialPardonForm tests=====" << std::endl;        
         PresidentialPardonForm pardon("Trillian");
         std::cout << pardon << std::endl;
 
-        midRank.signForm(pardon); // Should fail (25 needed)
-        highRank.signForm(pardon); // Should succeed
-        highRank.executeForm(pardon); // Should succeed
+        midRank.signForm(pardon);
+        highRank.signForm(pardon); 
+        highRank.executeForm(pardon);
 
-        // Try to execute unsigned form
+        std::cout << "\n=====Try to execute unsigned form=====" << std::endl;        
         PresidentialPardonForm pardon2("Slartibartfast");
-        highRank.executeForm(pardon2); // Should fail (not signed)
+        highRank.executeForm(pardon2);
 
     } catch (std::exception& e) {
         std::cerr << "Unexpected error: " << e.what() << std::endl;

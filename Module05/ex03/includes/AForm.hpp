@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:42:29 by marvin            #+#    #+#             */
-/*   Updated: 2025/04/17 21:59:14 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:36:49 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ public:
         virtual const char* what() const throw();
     };
 
+    class ToLowToSignException : public std::exception {
+    public:
+        virtual const char* what() const throw();
+    };
+    
     class FormNotSignedException : public std::exception {
     public:
         virtual const char* what() const throw();

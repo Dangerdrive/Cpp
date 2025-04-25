@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:52:55 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/23 18:05:31 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:42:14 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,11 @@ void Form::beSigned(const Bureaucrat& bureaucrat) {
 }
 
 const char* Form::GradeTooHighException::what() const throw() {
-    return "Form grade is too high (maximum is 1)";
+    return "Form: grade is too high";
 }
 
 const char* Form::GradeTooLowException::what() const throw() {
-    return "Form grade is too low (minimum is 150)";
+    return "Form: grade is too low";
 }
 
 const char* Form::AlreadySignedException::what() const throw() {

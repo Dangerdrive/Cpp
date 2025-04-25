@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Megaphonebook",
+            "name": "Debug MoreForms",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/megaphonebook",
+            "program": "${workspaceFolder}/moreforms",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

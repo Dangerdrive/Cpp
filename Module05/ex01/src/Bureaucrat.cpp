@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:52:55 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/17 21:54:53 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:48:55 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ void Bureaucrat::decrementGrade() {
 }
 
 const char* Bureaucrat::GradeTooHighException::what() const throw() {
-    return "Grade is too high (maximum is 1)";
+    return "grade is too high";
 }
 
 const char* Bureaucrat::GradeTooLowException::what() const throw() {
-    return "Grade is too low (minimum is 150)";
+    return "grade is too low";
 }
 
 std::ostream& operator<<(std::ostream& os, const Bureaucrat& bureaucrat) {
