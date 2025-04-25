@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:42:29 by marvin            #+#    #+#             */
-/*   Updated: 2025/04/17 22:04:30 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/25 16:53:15 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,6 @@ AForm* Intern::makeForm(const std::string& formName, const std::string& target) 
             return form;
         }
     }
-    std::cout << "Intern can't create " << formName << " form (unknown form type)" << std::endl;
+    std::cout << "Intern can't create " << formName << " (unknown form type)" << std::endl;
     return NULL;
 }

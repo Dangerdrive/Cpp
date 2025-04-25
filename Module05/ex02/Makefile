@@ -5,7 +5,7 @@
 # Special variables
 DEFAULT_GOAL:= all
 .DELETE_ON_ERROR: $(NAME)
-.PHONY: all bonus clean fclean re completion_message
+.PHONY: all bonus clean fclean re cleanall
 
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
@@ -62,6 +62,13 @@ fclean: clean
 	@echo $(GREEN)[Cleaning $(NAME)]$(LIMITER)
 	@$(RM) $(NAME)
 	@$(RM) $(BIN_DIR)
+	@$(RM) home_shrubbery
 
 # Removes objects and executables and remakes
 re: fclean all
+
+cleanall: 
+	@cd ../ex00 && make fclean
+	@cd ../ex01 && make fclean
+	@cd ../ex02 && make fclean
+	@cd ../ex03 && make fclean

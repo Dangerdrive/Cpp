@@ -51,6 +51,7 @@
 		"numeric": "cpp",
 		"fstream": "cpp",
 		"ranges": "cpp",
-		"span": "cpp"
+		"span": "cpp",
+		"ex03": "cpp"
 	}
 }

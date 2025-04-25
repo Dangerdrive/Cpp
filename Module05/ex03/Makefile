@@ -3,10 +3,9 @@
 #------------------------------------------------------------------------------#
 
 # Special variables
-DEFAULT_GOAL: all
+DEFAULT_GOAL:= all
 .DELETE_ON_ERROR: $(NAME)
 .PHONY: all bonus clean fclean re cleanall
-
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
 #------------------------------------------------------------------------------#
@@ -34,13 +33,13 @@ LIMITER =	"\033[0m"
 #------------------------------------------------------------------------------#
 
 all: $(BIN_DIR) $(NAME)
-	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
-	@echo 
-	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
 
 # Generates output file
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
+	@echo 
+	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
 
 # Compiles sources into objects
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
@@ -62,6 +61,7 @@ fclean: clean
 	@echo $(GREEN)[Cleaning $(NAME)]$(LIMITER)
 	@$(RM) $(NAME)
 	@$(RM) $(BIN_DIR)
+	@$(RM) ./home_shrubbery
 
 # Removes objects and executables and remakes
 re: fclean all

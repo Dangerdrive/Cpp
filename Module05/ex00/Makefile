@@ -5,7 +5,7 @@
 # Special variables
 DEFAULT_GOAL: all
 .DELETE_ON_ERROR: $(NAME)
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus clean fclean re cleanall
 
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
@@ -65,3 +65,9 @@ fclean: clean
 
 # Removes objects and executables and remakes
 re: fclean all
+
+cleanall: 
+	@cd ../ex00 && make fclean
+	@cd ../ex01 && make fclean
+	@cd ../ex02 && make fclean
+	@cd ../ex03 && make fclean
