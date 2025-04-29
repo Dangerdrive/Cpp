@@ -6,7 +6,7 @@
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 18:19:17 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/04/29 18:19:18 by fde-alen         ###   ########.fr       */
+/*   Updated: 2025/04/29 20:25:18 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ int main() {
     original.number = 42;
     original.text = "Hello, Serialization!";
 
-    // Serialize
+    std::cout << "Original data: " << original.number 
+    << ", " << original.text << std::endl;
+    
     uintptr_t raw = Serializer::serialize(&original);
     std::cout << "Serialized value: " << raw << std::endl;
 
-    // Deserialize
     Data* restored = Serializer::deserialize(raw);
     
-    // Verify
     std::cout << "Original address: " << &original << std::endl;
     std::cout << "Restored address: " << restored << std::endl;
     

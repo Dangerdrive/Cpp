@@ -16,8 +16,8 @@ CFLAGS	=	-Wall -Werror -Wextra -std=c++98  -g3 -O0 -I./includes
 RM		=	rm -rf
 
 # Dir and file names
-NAME	=	identify
-SRCS	=	./src/main.cpp ./src/Base.cpp ./src/Identification.cpp 
+NAME	=	scalar_converter
+SRCS	=	./src/main.cpp ./src/ScalarConverter.cpp
 BIN_DIR =	./bin
 OBJS	=	$(addprefix $(BIN_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 INC		=	$(wildcard /includes/*.hpp)
