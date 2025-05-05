@@ -135,3 +135,123 @@ void swap<MyClass>(MyClass& a, MyClass& b) {
 | **Flexible** | Works with `int`, `string`, etc. | Extensible to new types |
 
 Templates are what make C++'s Standard Template Library (STL) possible. Your exercise implements the same principles used in `std::swap`, `std::min`, and `std::max`.
+
+
+
+
+
+
+### Limitations and Common Misuses of the `iter` Template Function
+
+#### **1. Type Safety Limitations**
+   - **Problem**: The template accepts any pointer type `T*`, but doesn't verify if `func` is truly compatible with `T`.
+   - **Example**:
+     ```cpp
+     void printInt(int& x) { std::cout << x; }
+     double arr[3] = {1.1, 2.2, 3.3};
+     iter(arr, 3, printInt); // Compiles but causes undefined behavior!
+     ```
+   - **Fix**: Use `static_assert` (C++11+) or SFINAE (C++98) to restrict types.
+
+#### **2. No Bounds Checking**
+   - **Problem**: If `length` exceeds the actual array size, it leads to **buffer overflow**.
+   - **Example**:
+     ```cpp
+     int arr[3] = {1, 2, 3};
+     iter(arr, 5, printElement<int>); // Undefined behavior (reads out-of-bounds)
+     ```
+   - **Fix**: Use containers like `std::vector` or add a runtime check:
+     ```cpp
+     if (!array || length == 0) return;
+     ```
+
+#### **3. Inflexible Function Signatures**
+   - **Problem**: The function pointer `void (*func)(T&)` forces `T&` parameters.  
+     What if you need `const T&` or `T` by value?
+   - **Example**:
+     ```cpp
+     void printConst(const int& x) { std::cout << x; }
+     int arr[3] = {1, 2, 3};
+     iter(arr, 3, printConst); // Fails: `printConst` doesn't match `void (*)(int&)`
+     ```
+   - **Fix**: Use a more generic callable (C++11 `std::function` or template the functor):
+     ```cpp
+     template <typename T, typename Func>
+     void iter(T* array, size_t length, Func func) {
+         for (size_t i = 0; i < length; ++i) func(array[i]);
+     }
+     ```
+
+#### **4. No Support for `const` Arrays**
+   - **Problem**: Fails if the array is `const` (e.g., `const int*`).
+   - **Example**:
+     ```cpp
+     const int arr[3] = {1, 2, 3};
+     iter(arr, 3, printElement<int>); // Error: Cannot convert `const int*` to `int*`
+     ```
+   - **Fix**: Overload for `const T*`:
+     ```cpp
+     template <typename T>
+     void iter(const T* array, size_t length, void (*func)(const T&)) {
+         for (size_t i = 0; i < length; ++i) func(array[i]);
+     }
+     ```
+
+#### **5. Misuse with C-Style Strings**
+   - **Problem**: Passing a `char*` to `iter` might not work as expected.
+   - **Example**:
+     ```cpp
+     void capitalize(char& c) { c = toupper(c); }
+     char str[] = "hello";
+     iter(str, 5, capitalize); // Works but `length` must exclude the null terminator!
+     ```
+   - **Fix**: Document the behavior or specialize for `char*`.
+
+#### **6. No Compile-Time Size Safety**
+   - **Problem**: No way to enforce array size at compile time.
+   - **Example**:
+     ```cpp
+     int arr[3] = {1, 2, 3};
+     iter(arr, 5, printElement<int>); // Compiles but is wrong
+     ```
+   - **Fix**: Use `std::array` or C++11 `std::begin`/`std::end`.
+
+#### **7. Potential Performance Overhead**
+   - **Problem**: Function pointers inhibit inlining (unlike functors/lambdas).
+   - **Example**:
+     ```cpp
+     // Slower than a hand-written loop due to indirect calls.
+     iter(arr, 3, [](int& x) { x *= 2; }); // Lambdas (C++11) would be better
+     ```
+   - **Fix**: Template the functor (as shown in **Fix #3**).
+
+---
+
+### **Best Practices to Avoid Misuse**
+1. **Use SFINAE or C++20 Concepts** to restrict `T` and `Func`.
+2. **Overload for `const`** to support read-only arrays.
+3. **Document assumptions** (e.g., "`length` must match the array size").
+4. **Prefer functors over function pointers** for flexibility.
+5. **Add bounds checking** in debug builds.
+
+### **Improved C++98 Version**
+```cpp
+#include <cstddef> // For size_t
+
+// Non-const version
+template <typename T, typename Func>
+void iter(T* array, size_t length, Func func) {
+    if (!array || length == 0) return;
+    for (size_t i = 0; i < length; ++i) func(array[i]);
+}
+
+// Const version
+template <typename T, typename Func>
+void iter(const T* array, size_t length, Func func) {
+    if (!array || length == 0) return;
+    for (size_t i = 0; i < length; ++i) func(array[i]);
+}
+```
+
+This version avoids most pitfalls while remaining C++98-compatible.  
+For modern C++, use `std::span` (C++20) or range-based abstractions.

@@ -1,25 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   iter.hpp                                           :+:      :+:    :+:   */
+/*   whatever.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/01 15:25:04 by fde-alen          #+#    #+#             */
-/*   Updated: 2025/05/01 15:56:03 by fde-alen         ###   ########.fr       */
+/*   Created: 2025/05/01 19:29:34 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/05/01 19:29:35 by fde-alen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ITER_HPP
-#define ITER_HPP
-
-#include <cstddef>
+#ifndef WHATEVER_HPP
+#define WHATEVER_HPP
 
 template <typename T>
-void iter(T* array, size_t length, void (*func)(T&)) {
-    for (size_t i = 0; i < length; ++i) {
-        func(array[i]);
-    }
+void swap(T& a, T& b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
+template <typename T>
+const T& min(const T& a, const T& b) {
+    return (a < b) ? a : b;
+}
+
+template <typename T>
+const T& max(const T& a, const T& b) {
+    return (a > b) ? a : b;
 }
 
 #endif
