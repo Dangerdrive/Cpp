@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Span.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/08 22:55:00 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/05/08 22:55:01 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Span.hpp"
 
 Span::Span(unsigned int N) : _maxSize(N) {}
@@ -30,6 +42,8 @@ void Span::addRange(Iterator begin, Iterator end) {
     
     _numbers.insert(_numbers.end(), begin, end);
 }
+
+template void Span::addRange<std::vector<int>::iterator>(std::vector<int>::iterator, std::vector<int>::iterator);
 
 unsigned int Span::shortestSpan() const {
     if (_numbers.size() < 2)

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/08 22:55:19 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/05/08 22:55:26 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "easyfind.hpp"
 #include <vector>
 #include <list>
@@ -28,7 +40,7 @@ int main() {
         lst.push_back(30);
         
         std::list<int>::iterator it = easyfind(lst, 20);
-        std::cout << "Found value 20 in list" << std::endl;
+        std::cout << "Found value " << *it << " in list" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -41,7 +53,7 @@ int main() {
         dq.push_back(300);
         
         std::deque<int>::iterator it = easyfind(dq, 300);
-        std::cout << "Found value 300 in deque" << std::endl;
+        std::cout << "Found value " << *it << " in deque" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }

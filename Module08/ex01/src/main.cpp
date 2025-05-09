@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/08 21:45:08 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/05/08 21:45:09 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Span.hpp"
 #include <iostream>
 #include <vector>
@@ -18,10 +30,10 @@ int main() {
     // Test with range of iterators
     std::vector<int> bigVec;
     srand(time(0));
-    for (int i = 0; i < 10000; ++i)
+    for (int i = 0; i < 100000; ++i)
         bigVec.push_back(rand() % 1000000);
     
-    Span bigSpan(10000);
+    Span bigSpan(100000);
     bigSpan.addRange(bigVec.begin(), bigVec.end());
     std::cout << "Big span shortest: " << bigSpan.shortestSpan() << std::endl;
     std::cout << "Big span longest: " << bigSpan.longestSpan() << std::endl;

@@ -1,0 +1,102 @@
+Module-specific rules
+You will notice that, in this module, the exercises can be solved WITHOUT the standard
+Containers and WITHOUT the standard Algorithms.
+However, using them is precisely the goal of this Module. You are allowed to
+use the STL. Yes, you can use the Containers (vector/list/map/and so forth) and the
+Algorithms (defined in header <algorithm>). Moreover, you should use them as much
+as you can. Thus, do your best to apply them wherever it’s appropriate.
+You will get a very bad grade if you don’t, even if your code works as expected. Please
+don’t be lazy.
+You can define your templates in the header files as usual. Or, if you want to, you
+can write your template declarations in the header files and write their implementations
+in .tpp files. In any case, the header files are mandatory while the .tpp files are optional.
+
+Exercise 00: Easy find
+Exercise : 00
+Easy find
+Turn-in directory : ex00/
+Files to turn in : Makefile, main.cpp, easyfind.{h, hpp}
+and optional file: easyfind.tpp
+Forbidden functions : None
+A first easy exercise is the way to start off on the right foot.
+Write a function template easyfind that accepts a type T. It takes two parameters.
+The first one has type T and the second one is an integer.
+Assuming T is a container of integers, this function has to find the first occurrence
+of the second parameter in the first parameter.
+If no occurrence is found, you can either throw an exception or return an error value
+of your choice. If you need some inspiration, analyze how standard containers behave.
+Of course, implement and turn in your own tests to ensure everything works as expected.
+You don’t have to handle associative containers.
+
+### File: main.cpp
+#include "easyfind.hpp"
+#include <vector>
+#include <list>
+#include <deque>
+#include <iostream>
+
+int main() {
+    // Test with vector
+    try {
+        std::vector<int> vec;
+        vec.push_back(1);
+        vec.push_back(2);
+        vec.push_back(3);
+        
+        std::vector<int>::iterator it = easyfind(vec, 2);
+        std::cout << "Found value 2 at position " << std::distance(vec.begin(), it) << std::endl;
+        
+        easyfind(vec, 5); // This should throw
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    // Test with list
+    try {
+        std::list<int> lst;
+        lst.push_back(10);
+        lst.push_back(20);
+        lst.push_back(30);
+        
+        std::list<int>::iterator it = easyfind(lst, 20);
+        std::cout << "Found value " << *it << " in list" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    // Test with deque
+    try {
+        std::deque<int> dq;
+        dq.push_back(100);
+        dq.push_back(200);
+        dq.push_back(300);
+        
+        std::deque<int>::iterator it = easyfind(dq, 300);
+        std::cout << "Found value " << *it << " in deque" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    return 0;
+}
+
+### File: easyfind.hpp
+#ifndef EASYFIND_HPP
+#define EASYFIND_HPP
+
+#include <algorithm>
+#include <stdexcept>
+#include <iterator>
+
+template <typename T>
+typename T::iterator easyfind(T& container, int value) {
+    typename T::iterator it = std::find(container.begin(), container.end(), value);
+    if (it == container.end()) {
+        throw std::runtime_error("Value not found in container");
+    }
+    return it;
+}
+
+#endif
+
+

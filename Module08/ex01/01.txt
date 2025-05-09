@@ -1,0 +1,145 @@
+### File: main.cpp
+#include "Span.hpp"
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+int main() {
+    // Basic test
+    Span sp(5);
+    sp.addNumber(6);
+    sp.addNumber(3);
+    sp.addNumber(17);
+    sp.addNumber(9);
+    sp.addNumber(11);
+    std::cout << "Shortest span: " << sp.shortestSpan() << std::endl;
+    std::cout << "Longest span: " << sp.longestSpan() << std::endl;
+
+    // Test with range of iterators
+    std::vector<int> bigVec;
+    srand(time(0));
+    for (int i = 0; i < 10000; ++i)
+        bigVec.push_back(rand() % 1000000);
+    
+    Span bigSpan(10000);
+    bigSpan.addRange(bigVec.begin(), bigVec.end());
+    std::cout << "Big span shortest: " << bigSpan.shortestSpan() << std::endl;
+    std::cout << "Big span longest: " << bigSpan.longestSpan() << std::endl;
+
+    // Exception tests
+    try {
+        Span small(1);
+        small.addNumber(42);
+        small.addNumber(43); // Should throw
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    try {
+        Span empty(10);
+        empty.shortestSpan(); // Should throw
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+
+    return 0;
+}
+
+### File: Span.cpp
+#include "Span.hpp"
+
+Span::Span(unsigned int N) : _maxSize(N) {}
+
+Span::Span(const Span& other) : _maxSize(other._maxSize), _numbers(other._numbers) {}
+
+Span& Span::operator=(const Span& other) {
+    if (this != &other) {
+        _maxSize = other._maxSize;
+        _numbers = other._numbers;
+    }
+    return *this;
+}
+
+Span::~Span() {}
+
+void Span::addNumber(int number) {
+    if (_numbers.size() >= _maxSize)
+        throw std::runtime_error("Span is full");
+    _numbers.push_back(number);
+}
+
+template <typename Iterator>
+void Span::addRange(Iterator begin, Iterator end) {
+    size_t remaining = _maxSize - _numbers.size();
+    size_t inputSize = std::distance(begin, end);
+    
+    if (inputSize > remaining)
+        throw std::runtime_error("Not enough space in Span");
+    
+    _numbers.insert(_numbers.end(), begin, end);
+}
+
+unsigned int Span::shortestSpan() const {
+    if (_numbers.size() < 2)
+        throw std::runtime_error("Not enough numbers to calculate span");
+    
+    std::vector<int> sorted = _numbers;
+    std::sort(sorted.begin(), sorted.end());
+    
+    unsigned int minSpan = std::numeric_limits<unsigned int>::max();
+    for (size_t i = 1; i < sorted.size(); ++i) {
+        unsigned int span = sorted[i] - sorted[i - 1];
+        if (span < minSpan)
+            minSpan = span;
+    }
+    return minSpan;
+}
+
+unsigned int Span::longestSpan() const {
+    if (_numbers.size() < 2)
+        throw std::runtime_error("Not enough numbers to calculate span");
+    
+    int min = *std::min_element(_numbers.begin(), _numbers.end());
+    int max = *std::max_element(_numbers.begin(), _numbers.end());
+    return max - min;
+}
+
+unsigned int Span::size() const { return _numbers.size(); }
+unsigned int Span::capacity() const { return _maxSize; }
+
+### File: Span.hpp
+#ifndef SPAN_HPP
+#define SPAN_HPP
+
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+#include <limits>
+
+class Span {
+private:
+    unsigned int _maxSize;
+    std::vector<int> _numbers;
+
+public:
+    Span(unsigned int N);
+    Span(const Span& other);
+    Span& operator=(const Span& other);
+    ~Span();
+
+    void addNumber(int number);
+    
+    template <typename Iterator>
+    void addRange(Iterator begin, Iterator end);
+    
+    unsigned int shortestSpan() const;
+    unsigned int longestSpan() const;
+
+    unsigned int size() const;
+    unsigned int capacity() const;
+};
+
+#endif
+
+
