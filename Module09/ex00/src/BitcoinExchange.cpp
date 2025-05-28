@@ -105,18 +105,86 @@ std::string BitcoinExchange::findClosestDate(const std::string& date) const {
     }
 }
 
+// void BitcoinExchange::processInputFile(const std::string& inputFile) const {
+//     std::ifstream file(inputFile.c_str());
+//     if (!file.is_open()) {
+//         std::cerr << "Error: could not open file." << std::endl;
+//         return;
+//     }
+// 	if (file.peek() == std::ifstream::traits_type::eof()) {
+// 		std::cerr << "Error: file is empty." << std::endl;
+// 		return;
+// 	}    
+
+//     std::string line;
+//     // Skip header line
+//     std::getline(file, line);
+    
+//     while (std::getline(file, line)) {
+//         std::istringstream iss(line);
+//         std::string date;
+//         std::string valueStr;
+        
+//         if (std::getline(iss, date, '|') && std::getline(iss, valueStr)) {
+//             // Trim whitespace
+//             date.erase(date.find_last_not_of(" \t") + 1);
+//             valueStr.erase(0, valueStr.find_first_not_of(" \t"));
+//             valueStr.erase(valueStr.find_last_not_of(" \t") + 1);
+            
+//             if (!isValidDate(date)) {
+//                 std::cerr << "Error: bad input => " << date << std::endl;
+//                 continue;
+//             }
+            
+//             float value;
+//             if (!isValidValue(valueStr, value)) {
+//                 if (value < 0) {
+//                     std::cerr << "Error: not a positive number." << std::endl;
+//                 } else if (value > 1000) {
+//                     std::cerr << "Error: too large a number." << std::endl;
+//                 } else {
+//                     std::cerr << "Error: invalid value format." << std::endl;
+//                 }
+//                 continue;
+//             }
+            
+//             std::string closestDate = findClosestDate(date);
+//             if (closestDate.empty()) {
+//                 std::cerr << "Error: no data available for date " << date << " or earlier." << std::endl;
+//                 continue;
+//             }
+            
+//             float rate = _exchangeRates.at(closestDate);
+//             float result = value * rate;
+            
+//             std::cout << date << " => " << value << " = " << result << std::endl;
+//         } else {
+//             std::cerr << "Error: bad input => " << line << std::endl;
+//         }
+//     }
+//     file.close();
+// }
+
 void BitcoinExchange::processInputFile(const std::string& inputFile) const {
     std::ifstream file(inputFile.c_str());
     if (!file.is_open()) {
         std::cerr << "Error: could not open file." << std::endl;
         return;
     }
+    if (file.peek() == std::ifstream::traits_type::eof()) {
+        std::cerr << "Error: file is empty." << std::endl;
+        return;
+    }
 
     std::string line;
-    // Skip header line
-    std::getline(file, line);
+    bool isFirstLine = true;
     
     while (std::getline(file, line)) {
+        // Skip empty lines
+        if (line.empty()) {
+            continue;
+        }
+
         std::istringstream iss(line);
         std::string date;
         std::string valueStr;
@@ -126,6 +194,13 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
             date.erase(date.find_last_not_of(" \t") + 1);
             valueStr.erase(0, valueStr.find_first_not_of(" \t"));
             valueStr.erase(valueStr.find_last_not_of(" \t") + 1);
+
+            // Skip header line if it doesn't contain a valid date
+            if (isFirstLine && !isValidDate(date)) {
+                isFirstLine = false;
+                continue;
+            }
+            isFirstLine = false;
             
             if (!isValidDate(date)) {
                 std::cerr << "Error: bad input => " << date << std::endl;
@@ -155,7 +230,11 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
             
             std::cout << date << " => " << value << " = " << result << std::endl;
         } else {
-            std::cerr << "Error: bad input => " << line << std::endl;
+            // Only show error if it's not the first line (potential header)
+            if (!isFirstLine) {
+                std::cerr << "Error: bad input => " << line << std::endl;
+            }
+            isFirstLine = false;
         }
     }
     file.close();
