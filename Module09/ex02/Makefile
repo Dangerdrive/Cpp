@@ -5,7 +5,7 @@
 # Special variables
 DEFAULT_GOAL:= all
 .DELETE_ON_ERROR: $(NAME)
-.PHONY: all bonus clean fclean re cleanall
+.PHONY: all bonus clean fclean re test cleanall
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
 #------------------------------------------------------------------------------#
@@ -64,6 +64,9 @@ fclean: clean
 
 # Removes objects and executables and remakes
 re: fclean all
+
+test: 
+	./$(NAME) $(shuf -i 1-100 -n 10)
 
 cleanall: 
 	@cd ../ex00 && make fclean

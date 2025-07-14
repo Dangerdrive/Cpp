@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cmath>
+#include <climits>
 
 int PmergeMe::_comparisonCount = 0;
 
@@ -31,6 +32,9 @@ void PmergeMe::_validateInput(int argc, char** argv) {
         throw std::runtime_error("Error: no input provided.");
     }
 
+    _vec.clear();
+    _deq.clear();
+
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg.empty() || arg.find_first_not_of("0123456789") != std::string::npos) {
@@ -50,97 +54,90 @@ void PmergeMe::_validateInput(int argc, char** argv) {
 }
 
 size_t PmergeMe::_jacobsthal(size_t n) const {
-    // Jacobsthal numbers: J(n) = J(n-1) + 2*J(n-2)
-    // Sequence: 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341, ...
     if (n == 0) return 0;
     if (n == 1) return 1;
     return _jacobsthal(n - 1) + 2 * _jacobsthal(n - 2);
 }
 
 // Vector implementation
-void PmergeMe::_insertVec(std::vector<int>& main, std::vector<int>& pend, size_t jacobIndex) {
-    size_t jacob = _jacobsthal(jacobIndex);
-    size_t prevJacob = _jacobsthal(jacobIndex - 1);
+void PmergeMe::_insertVec(std::vector<int>& main, std::vector<int>& pend) {
+    Compare comp(this);
+    size_t jacobIndex = 3;
 
-    if (jacob > pend.size()) {
-        if (prevJacob >= pend.size()) {
-            return;
+    while (!pend.empty()) {
+        size_t jacob = _jacobsthal(jacobIndex);
+        size_t prevJacob = _jacobsthal(jacobIndex - 1);
+        size_t start = std::min(prevJacob, pend.size());
+        size_t end = std::min(jacob, pend.size());
+
+        if (start >= end) {
+            jacobIndex++;
+            continue;
         }
-        jacob = pend.size();
-    }
 
-    for (size_t i = jacob; i > prevJacob; --i) {
-        if (i - 1 >= pend.size()) continue;
+        for (size_t i = end; i > start; --i) {
+            size_t pos = i - 1;
+            if (pos >= pend.size()) {
+                continue;
+            }
 
-        std::vector<int>::iterator bound = main.begin() + (2 * (i - 1) + 1);
-        if (bound > main.end()) bound = main.end();
+            std::vector<int>::iterator bound = main.begin() + (2 * pos + 1);
+            if (bound > main.end()) {
+                bound = main.end();
+            }
 
-        std::vector<int>::iterator pos = std::upper_bound(
-            main.begin(), bound, pend[i - 1], 
-            [this](int a, int b) { return _compare(a, b); }
-        );
-        main.insert(pos, pend[i - 1]);
+            std::vector<int>::iterator insert_pos = std::upper_bound(
+                main.begin(), bound, pend[pos], comp);
+            main.insert(insert_pos, pend[pos]);
+            pend.erase(pend.begin() + pos);
+        }
+        jacobIndex++;
     }
 }
 
-void PmergeMe::_mergeInsertVec(std::vector<int>& vec) {
+void PmergeMe::_mergeInsertVec(std::vector<int>& vec, bool topLevel) {
+    (void)topLevel; // Silence unused parameter warning
     if (vec.size() <= 1) return;
 
-    // Step 1: Pairwise comparison and recursive sort
     std::vector<std::pair<int, int> > pairs;
-    bool hasOdd = vec.size() % 2 != 0;
-    int odd = hasOdd ? vec.back() : 0;
+    bool hasOdd = (vec.size() % 2 != 0);
+    int odd = hasOdd ? vec.back() : -1;
 
-    for (size_t i = 0; i < vec.size() - hasOdd; i += 2) {
-        if (_compare(vec[i + 1], vec[i])) {
-            pairs.push_back(std::make_pair(vec[i + 1], vec[i]));
+    for (size_t i = 0; i + 1 < vec.size(); i += 2) {
+        if (_compare(vec[i+1], vec[i])) {
+            pairs.push_back(std::make_pair(vec[i+1], vec[i]));
         } else {
-            pairs.push_back(std::make_pair(vec[i], vec[i + 1]));
+            pairs.push_back(std::make_pair(vec[i], vec[i+1]));
         }
     }
 
-    // Recursively sort the larger elements
     std::vector<int> largerElements;
     for (size_t i = 0; i < pairs.size(); ++i) {
         largerElements.push_back(pairs[i].second);
     }
+    _mergeInsertVec(largerElements, false);
 
-    _mergeInsertVec(largerElements);
-
-    // Rebuild pairs with sorted order
-    std::vector<std::pair<int, int> > sortedPairs;
+    std::vector<int> main;
+    std::vector<int> pend;
+    
+    main.push_back(pairs[0].first);
     for (size_t i = 0; i < largerElements.size(); ++i) {
         for (size_t j = 0; j < pairs.size(); ++j) {
             if (pairs[j].second == largerElements[i]) {
-                sortedPairs.push_back(pairs[j]);
-                pairs.erase(pairs.begin() + j);
+                main.push_back(largerElements[i]);
+                if (j != 0) {
+                    pend.push_back(pairs[j].first);
+                }
                 break;
             }
         }
     }
-
-    // Step 2: Build main chain and pend
-    std::vector<int> main;
-    std::vector<int> pend;
-
-    main.push_back(sortedPairs[0].first);
-    for (size_t i = 0; i < sortedPairs.size(); ++i) {
-        main.push_back(sortedPairs[i].second);
-        if (i > 0) {
-            pend.push_back(sortedPairs[i].first);
-        }
-    }
-    if (hasOdd) pend.push_back(odd);
-
-    // Step 3: Binary insertion using Jacobsthal sequence
-    size_t jacobIndex = 3;
-    while (true) {
-        size_t prevSize = pend.size();
-        _insertVec(main, pend, jacobIndex);
-        if (pend.size() == prevSize) break;
-        jacobIndex++;
+    
+    if (hasOdd && odd != -1) {
+        pend.push_back(odd);
     }
 
+    _insertVec(main, pend);
     vec = main;
 }
 
@@ -155,40 +152,51 @@ void PmergeMe::_sortVec(std::vector<int>& vec) {
               << elapsed << " us" << std::endl;
 }
 
-// Deque implementation (similar to vector but with deque operations)
-void PmergeMe::_insertDeq(std::deque<int>& main, std::deque<int>& pend, size_t jacobIndex) {
-    size_t jacob = _jacobsthal(jacobIndex);
-    size_t prevJacob = _jacobsthal(jacobIndex - 1);
+// Deque implementation
+void PmergeMe::_insertDeq(std::deque<int>& main, std::deque<int>& pend) {
+    Compare comp(this);
+    size_t jacobIndex = 3;
 
-    if (jacob > pend.size()) {
-        if (prevJacob >= pend.size()) {
-            return;
+    while (!pend.empty()) {
+        size_t jacob = _jacobsthal(jacobIndex);
+        size_t prevJacob = _jacobsthal(jacobIndex - 1);
+        size_t start = std::min(prevJacob, pend.size());
+        size_t end = std::min(jacob, pend.size());
+
+        if (start >= end) {
+            jacobIndex++;
+            continue;
         }
-        jacob = pend.size();
-    }
 
-    for (size_t i = jacob; i > prevJacob; --i) {
-        if (i - 1 >= pend.size()) continue;
+        for (size_t i = end; i > start; --i) {
+            size_t pos = i - 1;
+            if (pos >= pend.size()) {
+                continue;
+            }
 
-        std::deque<int>::iterator bound = main.begin() + (2 * (i - 1) + 1);
-        if (bound > main.end()) bound = main.end();
+            std::deque<int>::iterator bound = main.begin() + (2 * pos + 1);
+            if (bound > main.end()) {
+                bound = main.end();
+            }
 
-        std::deque<int>::iterator pos = std::upper_bound(
-            main.begin(), bound, pend[i - 1],
-            [this](int a, int b) { return _compare(a, b); }
-        );
-        main.insert(pos, pend[i - 1]);
+            std::deque<int>::iterator insert_pos = std::upper_bound(
+                main.begin(), bound, pend[pos], comp);
+            main.insert(insert_pos, pend[pos]);
+            pend.erase(pend.begin() + pos);
+        }
+        jacobIndex++;
     }
 }
 
-void PmergeMe::_mergeInsertDeq(std::deque<int>& deq) {
+void PmergeMe::_mergeInsertDeq(std::deque<int>& deq, bool topLevel) {
+    (void)topLevel; // Silence unused parameter warning
     if (deq.size() <= 1) return;
 
     std::vector<std::pair<int, int> > pairs;
     bool hasOdd = deq.size() % 2 != 0;
-    int odd = hasOdd ? deq.back() : 0;
+    int odd = hasOdd ? deq.back() : -1;
 
-    for (size_t i = 0; i < deq.size() - hasOdd; i += 2) {
+    for (size_t i = 0; i + 1 < deq.size(); i += 2) {
         if (_compare(deq[i + 1], deq[i])) {
             pairs.push_back(std::make_pair(deq[i + 1], deq[i]));
         } else {
@@ -201,39 +209,26 @@ void PmergeMe::_mergeInsertDeq(std::deque<int>& deq) {
         largerElements.push_back(pairs[i].second);
     }
 
-    _mergeInsertVec(largerElements); // Reuse vector implementation for recursive sorting
-
-    std::vector<std::pair<int, int> > sortedPairs;
-    for (size_t i = 0; i < largerElements.size(); ++i) {
-        for (size_t j = 0; j < pairs.size(); ++j) {
-            if (pairs[j].second == largerElements[i]) {
-                sortedPairs.push_back(pairs[j]);
-                pairs.erase(pairs.begin() + j);
-                break;
-            }
-        }
-    }
+    _mergeInsertVec(largerElements, false);
 
     std::deque<int> main;
     std::deque<int> pend;
 
-    main.push_back(sortedPairs[0].first);
-    for (size_t i = 0; i < sortedPairs.size(); ++i) {
-        main.push_back(sortedPairs[i].second);
-        if (i > 0) {
-            pend.push_back(sortedPairs[i].first);
+    main.push_back(pairs[0].first);
+    for (size_t i = 0; i < largerElements.size(); ++i) {
+        for (size_t j = 0; j < pairs.size(); ++j) {
+            if (pairs[j].second == largerElements[i]) {
+                main.push_back(largerElements[i]);
+                if (j != 0) {
+                    pend.push_back(pairs[j].first);
+                }
+                break;
+            }
         }
     }
-    if (hasOdd) pend.push_back(odd);
+    if (hasOdd && odd != -1) pend.push_back(odd);
 
-    size_t jacobIndex = 3;
-    while (true) {
-        size_t prevSize = pend.size();
-        _insertDeq(main, pend, jacobIndex);
-        if (pend.size() == prevSize) break;
-        jacobIndex++;
-    }
-
+    _insertDeq(main, pend);
     deq = main;
 }
 
@@ -278,7 +273,6 @@ void PmergeMe::sort(int argc, char** argv) {
     }
     std::cout << std::endl;
 
-    // Verify both containers produced the same result
     if (_vec != std::vector<int>(_deq.begin(), _deq.end())) {
         throw std::runtime_error("Error: vector and deque implementations produced different results");
     }
