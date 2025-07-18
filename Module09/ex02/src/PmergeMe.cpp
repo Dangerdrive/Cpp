@@ -66,16 +66,16 @@ void MergeInsertSorter::sortUsingVector() {
 
     // Create pairs
     for (size_t i = 1; i < m_vectorData.size(); i += 2) {
-        pairs.emplace_back(m_vectorData[i-1], m_vectorData[i]);
+        pairs.push_back(std::make_pair(m_vectorData[i-1], m_vectorData[i]));
     }
 
     // Sort pairs recursively
     mergeSortVectorPairs(pairs);
 
     // Separate into main chain and pending elements
-    for (const auto& pair : pairs) {
-        mainChain.push_back(pair.first);
-        pendingElements.push_back(pair.second);
+    for (std::vector<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+        mainChain.push_back(it->first);
+        pendingElements.push_back(it->second);
     }
 
     binaryInsertionSortVector(mainChain, pendingElements);
@@ -89,7 +89,7 @@ void MergeInsertSorter::sortUsingVector() {
 }
 
 void MergeInsertSorter::sortEachVectorPair() {
-    for (auto it = m_vectorData.begin() + 1; it < m_vectorData.end(); it += 2) {
+    for (std::vector<int>::iterator it = m_vectorData.begin() + 1; it < m_vectorData.end(); it += 2) {
         if (*(it - 1) < *it) {
             std::iter_swap(it - 1, it);
         }
@@ -179,21 +179,20 @@ void MergeInsertSorter::sortUsingDeque() {
 
     sortEachDequePair();
 
-    // Create pairs from deque elements
+    // Create pairs
     for (size_t i = 1; i < m_dequeData.size(); i += 2) {
-        pairs.emplace_back(m_dequeData[i-1], m_dequeData[i]);
+        pairs.push_back(std::make_pair(m_dequeData[i-1], m_dequeData[i]));
     }
 
     // Sort pairs recursively
     mergeSortDequePairs(pairs);
 
-    // Separate into main chain (larger elements) and pending elements (smaller elements)
-    for (const auto& pair : pairs) {
-        mainChain.push_back(pair.first);
-        pendingElements.push_back(pair.second);
+    // Separate into main chain and pending elements
+    for (std::deque<std::pair<int, int> >::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+        mainChain.push_back(it->first);
+        pendingElements.push_back(it->second);
     }
 
-    // Perform binary insertion sort on the pending elements
     binaryInsertionSortDeque(mainChain, pendingElements);
 
     // Handle odd element if exists
@@ -205,7 +204,7 @@ void MergeInsertSorter::sortUsingDeque() {
 }
 
 void MergeInsertSorter::sortEachDequePair() {
-    for (auto it = m_dequeData.begin() + 1; it < m_dequeData.end(); it += 2) {
+    for (std::deque<int>::iterator it = m_dequeData.begin() + 1; it < m_dequeData.end(); it += 2) {
         if (*(it - 1) < *it) {
             std::iter_swap(it - 1, it);
         }
@@ -287,15 +286,15 @@ void MergeInsertSorter::insertElementDeque(std::deque<int>& chain, int value, in
 
 // Helper methods
 void MergeInsertSorter::printSequence(const std::vector<int>& sequence) const {
-    for (int num : sequence) {
-        std::cout << num << " ";
+    for (std::vector<int>::const_iterator it = sequence.begin(); it != sequence.end(); ++it) {
+        std::cout << *it << " ";
     }
     std::cout << std::endl;
 }
 
 void MergeInsertSorter::printSequence(const std::deque<int>& sequence) const {
-    for (int num : sequence) {
-        std::cout << num << " ";
+    for (std::deque<int>::const_iterator it = sequence.begin(); it != sequence.end(); ++it) {
+        std::cout << *it << " ";
     }
     std::cout << std::endl;
 }
