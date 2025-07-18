@@ -112,32 +112,28 @@ void PmergeMe::sort() {
 	printVector(vec);
 	std::cout << std::endl;
 
-	std::cout << BLUE_TXT << "Time to process a range of " << vec.size()
+	std::cout << "Time to process a range of " << vec.size()
 			  << " elements with std::vector : " << std::fixed << std::setprecision(6)
 			  << (endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) * 1e-6
 			  << " us" << std::endl
-			  << std::endl
-			  << DEFAULT_TXT;
+			  << std::endl;
 
 	gettimeofday(&startTime, NULL);
 	sortDeque();
 	gettimeofday(&endTime, NULL);
 
-	std::cout << GREEN_TXT << "Time to process a range of " << vec.size()
+	std::cout << "Time to process a range of " << vec.size()
 			  << " elements with std::deque : " << std::fixed << std::setprecision(6)
 			  << (endTime.tv_sec - startTime.tv_sec) + (endTime.tv_usec - startTime.tv_usec) * 1e-6
 			  << " us" << std::endl
-			  << std::endl
-			  << DEFAULT_TXT;
+			  << std::endl;
 }
 
 // ************************************************************************** //
 //                               PRIVATE MEMBER FUNCTIONS                     //
 // ************************************************************************** //
 
-// ************************************************************************** //
-//                               VECTOR                                       //
-// ************************************************************************** //
+// ------------------------------VECTOR------------------------------//                                       //
 
 void PmergeMe::sortVector() {
 	std::vector<std::pair<int, int> > pairs;
@@ -268,9 +264,7 @@ void PmergeMe::printVector(const std::vector<int>& v) {
 	std::cout << std::endl;
 }
 
-// ************************************************************************** //
-//                               DEQUE                                        //
-// ************************************************************************** //
+// ------------------------------DEQUE------------------------------//
 
 void PmergeMe::sortDeque() {
 	std::deque<std::pair<int, int> > pairs;
@@ -462,13 +456,6 @@ bool PmergeMe::isSorted() {
 #include <iomanip>
 #include <iostream>
 #include <vector>
-
-#define RED_TXT "\033[1;31m"
-#define GREEN_TXT "\033[0;32m"
-#define YELLOW_TXT "\033[0;33m"
-#define BLUE_TXT "\033[0;34m"
-#define ORANGE_TXT "\033[38;5;202m\033[22m"
-#define DEFAULT_TXT "\033[1;39m"
 
 class PmergeMe {
    private:
