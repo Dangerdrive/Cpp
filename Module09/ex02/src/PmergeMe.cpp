@@ -1,311 +1,358 @@
-#include "PmergeMe.hpp"
-#include <cmath>
-#include <algorithm>
-#include <climits>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PmergeMe.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/25 01:48:53 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/07/25 01:48:54 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int PmergeMe::nbr_of_comps = 0;
+#include "PmergeMe.hpp"
+#include <algorithm>
+#include <cmath>
+#include <deque>
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+int PmergeMe::comparisonCount = 0;
 
 PmergeMe::PmergeMe() {}
-PmergeMe::PmergeMe(const std::vector<int>& vec, const std::deque<int>& deq) 
-    : m_vector(vec), m_deque(deq) {}
-PmergeMe::PmergeMe(const PmergeMe& pm) { *this = pm; }
-PmergeMe& PmergeMe::operator=(const PmergeMe& pm) {
-    if (this != &pm) {
-        m_vector = pm.m_vector;
-        m_deque = pm.m_deque;
-    }
-    return *this;
-}
+PmergeMe::PmergeMe(const PmergeMe& pm) { (void)pm; }
+PmergeMe& PmergeMe::operator=(const PmergeMe& pm) { (void)pm; return *this; }
 PmergeMe::~PmergeMe() {}
 
-void PmergeMe::sort() {
-    merge_insertion_sort_vec(m_vector, 1);
-    merge_insertion_sort_deque(m_deque, 1);
+std::set<int> PmergeMe::sortAndTime(PmergeMe &pm, int argc, char** argv,
+                                   std::vector<int>& vec,
+                                   std::deque<int>& deque,
+                                   double& timeVec,
+                                   double& timeDeque) {
+    std::set<int> original_values = argumentsToSet(argc, argv);
+
+    clock_t start_vec = clock();
+    vec = argumentsToVector(argc, argv);
+    pm.sortVector(vec);
+    clock_t end_vec = clock();
+    timeVec = static_cast<double>(end_vec - start_vec) / CLOCKS_PER_SEC;
+
+    comparisonCount = 0;
+    clock_t start_deque = clock();
+    deque = argumentsToDeque(argc, argv);
+    pm.sortDeque(deque);
+    clock_t end_deque = clock();
+    timeDeque = static_cast<double>(end_deque - start_deque) / CLOCKS_PER_SEC;
+
+    return original_values;
 }
 
-std::ostream& operator<<(std::ostream& os, const PmergeMe& pm) {
-    os << "Vector: [";
-    for (size_t i = 0; i < pm.m_vector.size(); ++i) {
-        if (i != 0) os << " ";
-        os << pm.m_vector[i];
-    }
-    os << "]\nDeque: [";
-    for (size_t i = 0; i < pm.m_deque.size(); ++i) {
-        if (i != 0) os << " ";
-        os << pm.m_deque[i];
-    }
-    os << "]";
-    return os;
+// Template function implementations
+template <typename T>
+T PmergeMe::getNextIterator(T it, int steps) {
+    std::advance(it, steps);
+    return it;
 }
 
-long jacobsthal_number(long n) {
-    return (long)((pow(2.0, n + 1) + pow(-1.0, n)) / 3.0 + 0.5);
+template <typename T>
+bool compareIterators(T lv, T rv) {
+    PmergeMe::comparisonCount++;
+    return *lv < *rv;
 }
 
-void PmergeMe::sort_vec(std::vector<int>& vec) {
-    merge_insertion_sort_vec(vec, 1);
+// Sorting functions implementation
+long jacobsthalNumber(long n) {
+    return round((pow(2, n + 1) + pow(-1, n)) / 3);
 }
 
-void PmergeMe::sort_deque(std::deque<int>& deque) {
-    merge_insertion_sort_deque(deque, 1);
+void PmergeMe::sortVector(std::vector<int>& vec) {
+    mergeInsertionSort<std::vector<int> >(vec, 1);
 }
 
-void PmergeMe::swap_pair_vec(std::vector<int>::iterator it, int pair_level) {
-    std::vector<int>::iterator start = it;
-    std::advance(start, -pair_level + 1);
-    std::vector<int>::iterator end = start;
-    std::advance(end, pair_level);
-    
-    while (start != end) {
-        std::vector<int>::iterator next = start;
-        std::advance(next, pair_level);
-        std::iter_swap(start, next);
+void PmergeMe::sortDeque(std::deque<int>& deque) {
+    mergeInsertionSort<std::deque<int> >(deque, 1);
+}
+
+template <typename T>
+void PmergeMe::swapPair(T it, int pairLevel)
+{
+    T start = getNextIterator(it, -pairLevel + 1);
+    T end = getNextIterator(start, pairLevel);
+    while (start != end)
+    {
+        std::iter_swap(start, getNextIterator(start, pairLevel));
         start++;
     }
 }
 
-void PmergeMe::swap_pair_deque(std::deque<int>::iterator it, int pair_level) {
-    std::deque<int>::iterator start = it;
-    std::advance(start, -pair_level + 1);
-    std::deque<int>::iterator end = start;
-    std::advance(end, pair_level);
-    
-    while (start != end) {
-        std::deque<int>::iterator next = start;
-        std::advance(next, pair_level);
-        std::iter_swap(start, next);
-        start++;
-    }
-}
+template <typename T>
+void PmergeMe::mergeInsertionSort(T& container, int pairLevel)
+{
+    typedef typename T::iterator Iterator;
 
-bool compare_vec_iterators(std::vector<int>::iterator lv, std::vector<int>::iterator rv) {
-    PmergeMe::nbr_of_comps++;
-    return *lv < *rv;
-}
+    int pairUnitsCount = container.size() / pairLevel;
+    if (pairUnitsCount < 2)
+        return;
 
-bool compare_deque_iterators(std::deque<int>::iterator lv, std::deque<int>::iterator rv) {
-    PmergeMe::nbr_of_comps++;
-    return *lv < *rv;
-}
+    bool isOdd = pairUnitsCount % 2 == 1;
+    Iterator start = container.begin();
+    Iterator last = getNextIterator(container.begin(), pairLevel * (pairUnitsCount));
+    Iterator end = getNextIterator(last, -(isOdd * pairLevel));
 
-void PmergeMe::merge_insertion_sort_vec(std::vector<int>& container, int pair_level) {
-    int pair_units_nbr = container.size() / pair_level;
-    if (pair_units_nbr < 2) return;
-
-    bool is_odd = pair_units_nbr % 2 == 1;
-    std::vector<int>::iterator start = container.begin();
-    std::vector<int>::iterator last = container.begin();
-    std::advance(last, pair_level * pair_units_nbr);
-    std::vector<int>::iterator end = last;
-    if (is_odd) std::advance(end, -pair_level);
-
-    int jump = 2 * pair_level;
-    for (std::vector<int>::iterator it = start; it != end; std::advance(it, jump)) {
-        std::vector<int>::iterator this_pair = it;
-        std::advance(this_pair, pair_level - 1);
-        std::vector<int>::iterator next_pair = it;
-        std::advance(next_pair, pair_level * 2 - 1);
-        if (compare_vec_iterators(next_pair, this_pair)) {
-            swap_pair_vec(this_pair, pair_level);
+    int jump = 2 * pairLevel;
+    for (Iterator it = start; it != end; std::advance(it, jump))
+    {
+        Iterator thisPair = getNextIterator(it, pairLevel - 1);
+        Iterator nextPair = getNextIterator(it, pairLevel * 2 - 1);
+        if (compareIterators(nextPair, thisPair))
+        {
+            swapPair(thisPair, pairLevel);
         }
     }
-    merge_insertion_sort_vec(container, pair_level * 2);
+    mergeInsertionSort(container, pairLevel * 2);
 
-    std::vector<std::vector<int>::iterator> main;
-    std::vector<std::vector<int>::iterator> pend;
+    std::vector<Iterator> mainChain;
+    std::vector<Iterator> pendingElements;
 
-    std::vector<int>::iterator it = container.begin();
-    std::advance(it, pair_level - 1);
-    main.push_back(it);
+    mainChain.insert(mainChain.end(), getNextIterator(container.begin(), pairLevel - 1));
+    mainChain.insert(mainChain.end(), getNextIterator(container.begin(), pairLevel * 2 - 1));
 
-    it = container.begin();
-    std::advance(it, pair_level * 2 - 1);
-    main.push_back(it);
-
-    for (int i = 4; i <= pair_units_nbr; i += 2) {
-        it = container.begin();
-        std::advance(it, pair_level * (i - 1) - 1);
-        pend.push_back(it);
-
-        it = container.begin();
-        std::advance(it, pair_level * i - 1);
-        main.push_back(it);
+    for (int i = 4; i <= pairUnitsCount; i += 2)
+    {
+        pendingElements.insert(pendingElements.end(),
+            getNextIterator(container.begin(), pairLevel * (i - 1) - 1));
+        mainChain.insert(mainChain.end(),
+            getNextIterator(container.begin(), pairLevel * i - 1));
     }
 
-    if (is_odd) {
-        it = end;
-        std::advance(it, pair_level - 1);
-        pend.push_back(it);
+    if (isOdd)
+    {
+        pendingElements.insert(pendingElements.end(),
+            getNextIterator(end, pairLevel - 1));
     }
 
-    int prev_jacobsthal = jacobsthal_number(1);
-    int inserted_numbers = 0;
-    for (int k = 2;; k++) {
-        int curr_jacobsthal = jacobsthal_number(k);
-        int jacobsthal_diff = curr_jacobsthal - prev_jacobsthal;
+    int prevJacobsthal = jacobsthalNumber(1);
+    int insertedNumbers = 0;
+    for (int k = 2;; k++)
+    {
+        int currJacobsthal = jacobsthalNumber(k);
+        int jacobsthalDiff = currJacobsthal - prevJacobsthal;
         int offset = 0;
-        if (jacobsthal_diff > static_cast<int>(pend.size())) break;
-        
-        std::vector<std::vector<int>::iterator>::iterator pend_it = pend.begin();
-        std::advance(pend_it, jacobsthal_diff - 1);
-        
-        std::vector<std::vector<int>::iterator>::iterator bound_it = main.begin();
-        std::advance(bound_it, curr_jacobsthal + inserted_numbers);
-        
-        int nbr_of_times = jacobsthal_diff;
-        while (nbr_of_times) {
-            std::vector<std::vector<int>::iterator>::iterator idx = 
-                std::upper_bound(main.begin(), bound_it, *pend_it, compare_vec_iterators);
-            
-            std::vector<std::vector<int>::iterator>::iterator inserted = main.insert(idx, *pend_it);
-            nbr_of_times--;
-            pend_it = pend.erase(pend_it);
-            std::advance(pend_it, -1);
-            
-            offset += (inserted - main.begin()) == curr_jacobsthal + inserted_numbers;
-            bound_it = main.begin();
-            std::advance(bound_it, curr_jacobsthal + inserted_numbers - offset);
+        if (jacobsthalDiff > static_cast<int>(pendingElements.size()))
+            break;
+        int iterations = jacobsthalDiff;
+        typename std::vector<Iterator>::iterator pendIt =
+            getNextIterator(pendingElements.begin(), jacobsthalDiff - 1);
+        typename std::vector<Iterator>::iterator boundIt =
+            getNextIterator(mainChain.begin(), currJacobsthal + insertedNumbers);
+        while (iterations)
+        {
+            typename std::vector<Iterator>::iterator idx =
+                std::upper_bound(mainChain.begin(), boundIt, *pendIt, compareIterators<Iterator>);
+            typename std::vector<Iterator>::iterator inserted = mainChain.insert(idx, *pendIt);
+            iterations--;
+            pendIt = pendingElements.erase(pendIt);
+            std::advance(pendIt, -1);
+            offset += (inserted - mainChain.begin()) == currJacobsthal + insertedNumbers;
+            boundIt = getNextIterator(mainChain.begin(), currJacobsthal + insertedNumbers - offset);
         }
-        prev_jacobsthal = curr_jacobsthal;
-        inserted_numbers += jacobsthal_diff;
+        prevJacobsthal = currJacobsthal;
+        insertedNumbers += jacobsthalDiff;
         offset = 0;
     }
 
-    for (int i = pend.size() - 1; i >= 0; i--) {
-        std::vector<std::vector<int>::iterator>::iterator curr_pend = pend.begin();
-        std::advance(curr_pend, i);
-        
-        std::vector<std::vector<int>::iterator>::iterator curr_bound = main.begin();
-        std::advance(curr_bound, main.size() - pend.size() + i + is_odd);
-        
-        std::vector<std::vector<int>::iterator>::iterator idx = 
-            std::upper_bound(main.begin(), curr_bound, *curr_pend, compare_vec_iterators);
-        main.insert(idx, *curr_pend);
+    for (ssize_t i = pendingElements.size() - 1; i >= 0; i--)
+    {
+        typename std::vector<Iterator>::iterator currPend =
+            getNextIterator(pendingElements.begin(), i);
+        typename std::vector<Iterator>::iterator currBound =
+            getNextIterator(mainChain.begin(), mainChain.size() - pendingElements.size() + i + isOdd);
+        typename std::vector<Iterator>::iterator idx =
+            std::upper_bound(mainChain.begin(), currBound, *currPend, compareIterators<Iterator>);
+        mainChain.insert(idx, *currPend);
     }
 
     std::vector<int> copy;
-    for (std::vector<std::vector<int>::iterator>::iterator it = main.begin(); it != main.end(); it++) {
-        for (int i = 0; i < pair_level; i++) {
-            std::vector<int>::iterator pair_start = *it;
-            std::advance(pair_start, -pair_level + i + 1);
-            copy.push_back(*pair_start);
+    copy.reserve(container.size());
+    for (typename std::vector<Iterator>::iterator it = mainChain.begin(); it != mainChain.end(); it++)
+    {
+        for (int i = 0; i < pairLevel; i++)
+        {
+            Iterator pairStart = *it;
+            std::advance(pairStart, -pairLevel + i + 1);
+            copy.insert(copy.end(), *pairStart);
         }
     }
 
-    std::vector<int>::iterator container_it = container.begin();
-    for (std::vector<int>::iterator copy_it = copy.begin(); copy_it != copy.end(); copy_it++) {
-        *container_it = *copy_it;
-        container_it++;
+    Iterator containerIt = container.begin();
+    std::vector<int>::iterator copyIt = copy.begin();
+    while (copyIt != copy.end())
+    {
+        *containerIt = *copyIt;
+        containerIt++;
+        copyIt++;
     }
 }
 
-void PmergeMe::merge_insertion_sort_deque(std::deque<int>& container, int pair_level) {
-    int pair_units_nbr = container.size() / pair_level;
-    if (pair_units_nbr < 2) return;
+// Utility functions implementation
+static std::string validateArgument(std::string arg)
+{
+    if (arg[0] == '-')
+        return "Negative numbers are not allowed";
+    long nbr = strtol(arg.c_str(), NULL, 10);
+    if (nbr == 0 && arg != "0")
+        return "Non-number arguments not allowed";
+    if (nbr > INT_MAX || errno == ERANGE)
+        return "Too big arguments are not allowed";
+    return "";
+}
 
-    bool is_odd = pair_units_nbr % 2 == 1;
-    std::deque<int>::iterator start = container.begin();
-    std::deque<int>::iterator last = container.begin();
-    std::advance(last, pair_level * pair_units_nbr);
-    std::deque<int>::iterator end = last;
-    if (is_odd) std::advance(end, -pair_level);
-
-    int jump = 2 * pair_level;
-    for (std::deque<int>::iterator it = start; it != end; std::advance(it, jump)) {
-        std::deque<int>::iterator this_pair = it;
-        std::advance(this_pair, pair_level - 1);
-        std::deque<int>::iterator next_pair = it;
-        std::advance(next_pair, pair_level * 2 - 1);
-        if (compare_deque_iterators(next_pair, this_pair)) {
-            swap_pair_deque(this_pair, pair_level);
-        }
+std::string PmergeMe::validateArguments(int argc, char** argv)
+{
+    if (argc == 1)
+        return "No arguments were provided";
+    for (int i = 1; i < argc; i++)
+    {
+        std::string status = validateArgument(argv[i]);
+        if (status != "")
+            return status;
     }
-    merge_insertion_sort_deque(container, pair_level * 2);
+    return "";
+}
 
-    std::vector<std::deque<int>::iterator> main;
-    std::vector<std::deque<int>::iterator> pend;
-
-    std::deque<int>::iterator it = container.begin();
-    std::advance(it, pair_level - 1);
-    main.push_back(it);
-
-    it = container.begin();
-    std::advance(it, pair_level * 2 - 1);
-    main.push_back(it);
-
-    for (int i = 4; i <= pair_units_nbr; i += 2) {
-        it = container.begin();
-        std::advance(it, pair_level * (i - 1) - 1);
-        pend.push_back(it);
-
-        it = container.begin();
-        std::advance(it, pair_level * i - 1);
-        main.push_back(it);
+std::vector<int> PmergeMe::argumentsToVector(int argc, char** argv)
+{
+    std::vector<int> res;
+    res.reserve(argc - 1);
+    for (int i = 1; i < argc; i++)
+    {
+        res.push_back(atoi(argv[i]));
     }
+    return res;
+}
 
-    if (is_odd) {
-        it = end;
-        std::advance(it, pair_level - 1);
-        pend.push_back(it);
+std::deque<int> PmergeMe::argumentsToDeque(int argc, char** argv)
+{
+    std::deque<int> res;
+    for (int i = 1; i < argc; i++)
+    {
+        res.push_back(atoi(argv[i]));
     }
+    return res;
+}
 
-    int prev_jacobsthal = jacobsthal_number(1);
-    int inserted_numbers = 0;
-    for (int k = 2;; k++) {
-        int curr_jacobsthal = jacobsthal_number(k);
-        int jacobsthal_diff = curr_jacobsthal - prev_jacobsthal;
-        int offset = 0;
-        if (jacobsthal_diff > static_cast<int>(pend.size())) break;
-        
-        std::vector<std::deque<int>::iterator>::iterator pend_it = pend.begin();
-        std::advance(pend_it, jacobsthal_diff - 1);
-        
-        std::vector<std::deque<int>::iterator>::iterator bound_it = main.begin();
-        std::advance(bound_it, curr_jacobsthal + inserted_numbers);
-        
-        int nbr_of_times = jacobsthal_diff;
-        while (nbr_of_times) {
-            std::vector<std::deque<int>::iterator>::iterator idx = 
-                std::upper_bound(main.begin(), bound_it, *pend_it, compare_deque_iterators);
-            
-            std::vector<std::deque<int>::iterator>::iterator inserted = main.insert(idx, *pend_it);
-            nbr_of_times--;
-            pend_it = pend.erase(pend_it);
-            std::advance(pend_it, -1);
-            
-            offset += (inserted - main.begin()) == curr_jacobsthal + inserted_numbers;
-            bound_it = main.begin();
-            std::advance(bound_it, curr_jacobsthal + inserted_numbers - offset);
-        }
-        prev_jacobsthal = curr_jacobsthal;
-        inserted_numbers += jacobsthal_diff;
-        offset = 0;
+std::set<int> PmergeMe::argumentsToSet(int argc, char** argv)
+{
+    std::set<int> res;
+    for (int i = 1; i < argc; i++)
+    {
+        res.insert(atoi(argv[i]));
     }
+    return res;
+}
 
-    for (int i = pend.size() - 1; i >= 0; i--) {
-        std::vector<std::deque<int>::iterator>::iterator curr_pend = pend.begin();
-        std::advance(curr_pend, i);
-        
-        std::vector<std::deque<int>::iterator>::iterator curr_bound = main.begin();
-        std::advance(curr_bound, main.size() - pend.size() + i + is_odd);
-        
-        std::vector<std::deque<int>::iterator>::iterator idx = 
-            std::upper_bound(main.begin(), curr_bound, *curr_pend, compare_deque_iterators);
-        main.insert(idx, *curr_pend);
+bool PmergeMe::isVectorSorted(const std::vector<int>& vec)
+{
+    if (vec.size() == 0 || vec.size() == 1)
+        return true;
+    std::vector<int>::const_iterator end = vec.end();
+    std::advance(end, -1);
+    for (std::vector<int>::const_iterator it = vec.begin(); it != end; it++)
+    {
+        std::vector<int>::const_iterator next = it;
+        std::advance(next, 1);
+        if (*it > *next)
+            return false;
     }
+    return true;
+}
 
-    std::deque<int> copy;
-    for (std::vector<std::deque<int>::iterator>::iterator it = main.begin(); it != main.end(); it++) {
-        for (int i = 0; i < pair_level; i++) {
-            std::deque<int>::iterator pair_start = *it;
-            std::advance(pair_start, -pair_level + i + 1);
-            copy.push_back(*pair_start);
-        }
+bool PmergeMe::isDequeSorted(const std::deque<int>& deque)
+{
+    if (deque.size() == 0 || deque.size() == 1)
+        return true;
+    std::deque<int>::const_iterator end = deque.end();
+    std::advance(end, -1);
+    for (std::deque<int>::const_iterator it = deque.begin(); it != end; it++)
+    {
+        std::deque<int>::const_iterator next = it;
+        std::advance(next, 1);
+        if (*it > *next)
+            return false;
     }
+    return true;
+}
 
-    std::deque<int>::iterator container_it = container.begin();
-    for (std::deque<int>::iterator copy_it = copy.begin(); copy_it != copy.end(); copy_it++) {
-        *container_it = *copy_it;
-        container_it++;
+std::string PmergeMe::argumentsToString(int argc, char** argv)
+{
+    std::string res("");
+    res.reserve(argc + 1);
+    res += "[";
+    res += argv[1];
+    for (int i = 2; argv[i]; i++)
+    {
+        res += " ";
+        res += argv[i];
     }
+    res += "]";
+    return res;
+}
+
+std::string PmergeMe::vectorToString(const std::vector<int>& vec)
+{
+    std::stringstream ss;
+    ss << "[" << vec[0];
+    for (size_t i = 1; i < vec.size(); i++)
+    {
+        ss << " " << vec[i];
+    }
+    ss << "]";
+    return ss.str();
+}
+
+bool PmergeMe::retainsOriginalValues(const std::set<int>& original_values, const std::vector<int>& vec)
+{
+    std::set<int> tempSet = original_values;
+    for (int i = 0; i < (int)vec.size(); i++)
+    {
+        if (tempSet.find(vec[i]) == tempSet.end())
+            return false;
+        tempSet.erase(vec[i]);
+    }
+    return true;
+}
+
+bool PmergeMe::validateResults(int argc,
+                             const std::vector<int>& vec,
+                             const std::deque<int>& deque,
+                             const std::set<int>& originalValues) {
+    if (!isVectorSorted(vec) || (int)deque.size() != (argc - 1) || !retainsOriginalValues(originalValues, vec)) {
+        std::cout << "Vector was not sorted properly.\n";
+        return false;
+    }
+    if (!isDequeSorted(deque) || (int)deque.size() != (argc - 1)) {
+        std::cout << "Deque was not sorted properly.\n";
+        return false;
+    }
+    return true;
+}
+
+void PmergeMe::printResults(int argc, char** argv,
+                          const std::vector<int>& vec,
+                          double timeVec,
+                          double timeDeque)
+{
+    std::cout << "\033[31mBefore\033[00m: " << argumentsToString(argc, argv) << "\n";
+    std::cout << "\033[32mAfter\033[00m:  " << vectorToString(vec) << "\n";
+    std::cout << "Time to process " << vec.size()
+              << " elements with vector: " << std::fixed << std::setprecision(6)
+              << timeVec << "s\n";
+    std::cout << "Time to process " << vec.size()
+              << " elements with deque:  " << std::fixed << std::setprecision(6)
+              << timeDeque << "s\n";
+    //std::cout << "Number of comparisons: " << comparisonCount << '\n';
 }

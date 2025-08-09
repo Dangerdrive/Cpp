@@ -5,7 +5,7 @@
 # Special variables
 DEFAULT_GOAL:= all
 .DELETE_ON_ERROR: $(NAME)
-.PHONY: all bonus clean fclean re test cleanall
+.PHONY: all bonus clean fclean re cleanall
 #------------------------------------------------------------------------------#
 #                                VARIABLES                                     #
 #------------------------------------------------------------------------------#
@@ -38,14 +38,14 @@ all: $(BIN_DIR) $(NAME)
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $@
 	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
-	@echo 
-	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
+	@echo
+	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME) "<Arguments>"$(LIMITER)
 
 # Compiles sources into objects
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
 	@echo $(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)
 	@$(CC) $(CFLAGS) -c $< -o $@
-	
+
 # Create bin directory
 $(BIN_DIR):
 	@echo $(GREEN)[Creating $(BIN_DIR)]$(LIMITER)
@@ -65,10 +65,22 @@ fclean: clean
 # Removes objects and executables and remakes
 re: fclean all
 
-test: 
-	./$(NAME) $(shuf -i 1-100 -n 10)
-
-cleanall: 
+cleanall:
 	@cd ../ex00 && make fclean
 	@cd ../ex01 && make fclean
 	@cd ../ex02 && make fclean
+
+test1:
+	@echo $(CYAN)Testing with random numbers...$(LIMITER)
+	@./$(NAME) $(shuf -i 1-100 -n 10)
+	@echo $(CYAN)Test complete!$(LIMITER)
+
+test2:
+	@echo $(CYAN)Testing with sorted numbers...$(LIMITER)
+	@./$(NAME) $(seq 1 10)
+	@echo $(CYAN)Test complete!$(LIMITER)
+
+test3:
+	@echo $(CYAN)Testing some numbers...$(LIMITER)
+	@./$(NAME) $(1 9 2 8 3 7 4 6 5)
+	@echo $(CYAN)Test complete!$(LIMITER)

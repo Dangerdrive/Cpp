@@ -39,19 +39,23 @@ all: $(BIN_DIR) $(NAME)
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $@
 	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
-	@echo 
+	@echo
 	@echo $(CYAN)run it with$(LIMITER) $(WHITE_B)./$(NAME)" input.txt"$(LIMITER)
 
 # Compiles sources into objects
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
 	@echo $(GREEN)[Compiling $<]$(LIMITER) $(WHITE_U)with$(LIMITER) $(CYAN)[$(CC) $(CFLAGS)]$(LIMITER)
 	@$(CC) $(CFLAGS) -c $< -o $@
-	
+
 # Create bin directory
 $(BIN_DIR): input.txt
 	@echo $(GREEN)[Creating example "input.txt"]$(LIMITER)
 	@echo $(GREEN)[Creating $(BIN_DIR)]$(LIMITER)
 	@mkdir -p $@
+# Downloads and extracts data.csv
+	@wget https://cdn.intra.42.fr/document/document/34440/cpp_09.tgz
+	@tar -xzf cpp_09.tgz --strip-components=1 -C ./
+	@rm cpp_09.tgz
 
 # Removes objects
 clean:
@@ -63,8 +67,9 @@ fclean: clean
 	@echo $(GREEN)[Cleaning $(NAME)]$(LIMITER)
 	@$(RM) $(NAME)
 	@$(RM) $(BIN_DIR)
+	@echo $(GREEN)[Cleaning example input file and database]$(LIMITER)
 	@$(RM) input.txt
-
+	@$(RM) data.csv
 # Removes objects and executables and remakes
 re: fclean all
 
@@ -80,9 +85,9 @@ input.txt:
 	@echo "2012-01-11 | 1" >> input.txt
 	@echo "2012-01-11 | 2147483648" >> input.txt
 
-
-
-cleanall: 
+cleanall:
 	@cd ../ex00 && make fclean
 	@cd ../ex01 && make fclean
 	@cd ../ex02 && make fclean
+
+

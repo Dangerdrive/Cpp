@@ -3,7 +3,8 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " \"RPN expression\"" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " \"<RPN expression>\"" << std::endl;
+        std::cerr << "Example: " << argv[0] << " \"3 4 + 2 * 7 -\"" << std::endl;
         return 1;
     }
 

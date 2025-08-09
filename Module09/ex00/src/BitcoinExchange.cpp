@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   BitcoinExchange.cpp                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fde-alen <fde-alen@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/25 17:08:13 by fde-alen          #+#    #+#             */
+/*   Updated: 2025/07/25 17:17:03 by fde-alen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "BitcoinExchange.hpp"
 #include <fstream>
 #include <sstream>
@@ -33,12 +45,12 @@ void BitcoinExchange::loadDatabase(const std::string& databaseFile) {
 
     std::string line;
 
-    std::getline(file, line);  
+    std::getline(file, line);
     while (std::getline(file, line)) {
         std::istringstream iss(line);
         std::string date;
         std::string rateStr;
-        
+
         if (std::getline(iss, date, ',') && std::getline(iss, rateStr)) {
             float rate = std::atof(rateStr.c_str());
             _exchangeRates[date] = rate;
@@ -73,7 +85,7 @@ bool BitcoinExchange::isValidDate(const std::string& date) const {
 bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) const {
     char* endptr;
     value = std::strtof(valueStr.c_str(), &endptr);
-    
+
     if (*endptr != '\0' && *endptr != ' ') {
         return false;
     }
@@ -88,7 +100,7 @@ bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) co
 
 std::string BitcoinExchange::findClosestDate(const std::string& date) const {
     std::map<std::string, float>::const_iterator it = _exchangeRates.lower_bound(date);
-    
+
     if (it == _exchangeRates.begin()) {
         if (it->first == date) {
             return date;
@@ -96,7 +108,7 @@ std::string BitcoinExchange::findClosestDate(const std::string& date) const {
             return ""; // No earlier date available
         }
     }
-    
+
     if (it != _exchangeRates.end() && it->first == date) {
         return date;
     } else {
@@ -104,66 +116,6 @@ std::string BitcoinExchange::findClosestDate(const std::string& date) const {
         return it->first;
     }
 }
-
-// void BitcoinExchange::processInputFile(const std::string& inputFile) const {
-//     std::ifstream file(inputFile.c_str());
-//     if (!file.is_open()) {
-//         std::cerr << "Error: could not open file." << std::endl;
-//         return;
-//     }
-// 	if (file.peek() == std::ifstream::traits_type::eof()) {
-// 		std::cerr << "Error: file is empty." << std::endl;
-// 		return;
-// 	}    
-
-//     std::string line;
-//     // Skip header line
-//     std::getline(file, line);
-    
-//     while (std::getline(file, line)) {
-//         std::istringstream iss(line);
-//         std::string date;
-//         std::string valueStr;
-        
-//         if (std::getline(iss, date, '|') && std::getline(iss, valueStr)) {
-//             // Trim whitespace
-//             date.erase(date.find_last_not_of(" \t") + 1);
-//             valueStr.erase(0, valueStr.find_first_not_of(" \t"));
-//             valueStr.erase(valueStr.find_last_not_of(" \t") + 1);
-            
-//             if (!isValidDate(date)) {
-//                 std::cerr << "Error: bad input => " << date << std::endl;
-//                 continue;
-//             }
-            
-//             float value;
-//             if (!isValidValue(valueStr, value)) {
-//                 if (value < 0) {
-//                     std::cerr << "Error: not a positive number." << std::endl;
-//                 } else if (value > 1000) {
-//                     std::cerr << "Error: too large a number." << std::endl;
-//                 } else {
-//                     std::cerr << "Error: invalid value format." << std::endl;
-//                 }
-//                 continue;
-//             }
-            
-//             std::string closestDate = findClosestDate(date);
-//             if (closestDate.empty()) {
-//                 std::cerr << "Error: no data available for date " << date << " or earlier." << std::endl;
-//                 continue;
-//             }
-            
-//             float rate = _exchangeRates.at(closestDate);
-//             float result = value * rate;
-            
-//             std::cout << date << " => " << value << " = " << result << std::endl;
-//         } else {
-//             std::cerr << "Error: bad input => " << line << std::endl;
-//         }
-//     }
-//     file.close();
-// }
 
 void BitcoinExchange::processInputFile(const std::string& inputFile) const {
     std::ifstream file(inputFile.c_str());
@@ -178,7 +130,7 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
 
     std::string line;
     bool isFirstLine = true;
-    
+
     while (std::getline(file, line)) {
         // Skip empty lines
         if (line.empty()) {
@@ -188,7 +140,7 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
         std::istringstream iss(line);
         std::string date;
         std::string valueStr;
-        
+
         if (std::getline(iss, date, '|') && std::getline(iss, valueStr)) {
             // Trim whitespace
             date.erase(date.find_last_not_of(" \t") + 1);
@@ -201,12 +153,12 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
                 continue;
             }
             isFirstLine = false;
-            
+
             if (!isValidDate(date)) {
                 std::cerr << "Error: bad input => " << date << std::endl;
                 continue;
             }
-            
+
             float value;
             if (!isValidValue(valueStr, value)) {
                 if (value < 0) {
@@ -218,16 +170,16 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) const {
                 }
                 continue;
             }
-            
+
             std::string closestDate = findClosestDate(date);
             if (closestDate.empty()) {
                 std::cerr << "Error: no data available for date " << date << " or earlier." << std::endl;
                 continue;
             }
-            
+
             float rate = _exchangeRates.at(closestDate);
             float result = value * rate;
-            
+
             std::cout << date << " => " << value << " = " << result << std::endl;
         } else {
             // Only show error if it's not the first line (potential header)

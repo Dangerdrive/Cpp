@@ -39,7 +39,8 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $@
 	@echo $(WHITE_U)Compilation Complete!$(LIMITER)
 	@echo 
-	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)
+	@echo $(CYAN)run it with$(LIMITER) $(WHITE_U)./$(NAME)$(LIMITER)" <RPN Expression>"
+	@echo "Example: ./$(NAME) \"3 4 + 2 * 7 -\""$(LIMITER)
 
 # Compiles sources into objects
 $(BIN_DIR)/%.o: ./src/%.cpp $(INC)
