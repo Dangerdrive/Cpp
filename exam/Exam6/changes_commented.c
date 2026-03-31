@@ -1,13 +1,3 @@
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-// Estrutura para armazenar dados dos clientes
 typedef struct s_client {
     int id;
     char *msg;
@@ -32,41 +22,15 @@ void send_all(int sender_fd) {
 }
 
 
-int extract_message(char **buf, char **msg) {
-    char *newbuf;
-    int i = 0;
+int extract_message ...
+    // if (newbuf == 0)
+    if (newbuf == 0) fatal_error();
 
-    *msg = 0;
-    if (*buf == 0) 
-        return (0);
-    while ((*buf)[i]) {
-        if ((*buf)[i] == '\n') {
-            newbuf = calloc(1, sizeof(*newbuf) * (strlen(*buf + i + 1) + 1));
-            if (newbuf == 0) fatal_error(); //lembrar de mudar o erro para chamar a fatal error
-            strcpy(newbuf, *buf + i + 1);
-            *msg = *buf;
-            (*msg)[i + 1] = 0;
-            *buf = newbuf;
-            return (1);
-        }
-        i++;
-    }
-    return (0);
-}
+char *str_join ...
+    // if (newbuf == 0)
+    if (newbuf == 0) fatal_error();
 
-char *str_join(char *buf, char *add) {
-    char *newbuf;
-    int len = (buf == 0) ? 0 : strlen(buf);
-    newbuf = malloc(sizeof(*newbuf) * (len + strlen(add) + 1));
-    if (newbuf == 0) fatal_error(); //lembrar de mudar o erro para chamar a fatal error
-    newbuf[0] = 0;
-    if (buf != 0) strcat(newbuf, buf);
-    free(buf);
-    strcat(newbuf, add);
-    return (newbuf);
-}
-
-int main(int argc, char **argv) {
+    int main(int argc, char **argv) {
     if (argc != 2) {
         write(2, "Wrong number of arguments\n", 26);
         exit(1);
@@ -115,7 +79,7 @@ int main(int argc, char **argv) {
                 } 
                 // Mensagem de cliente existente
                 else {
-                    ssize_t buff_len = recv(max_fd + 1, buffer_read, sizeof(buffer_read) - 1, 0); //lê a msg que o cliente enviou
+                    ssize_t buff_len = recv(fd, buffer_read, sizeof(buffer_read) - 1, 0); //lê a msg que o cliente enviou
                     if (buff_len <= 0) { //Se não tem msg nenhuma, significa que o cliente desconectou
                         sprintf(buffer_send, "server: client %d just left\n", clients[fd].id);
                         send_all(fd);
